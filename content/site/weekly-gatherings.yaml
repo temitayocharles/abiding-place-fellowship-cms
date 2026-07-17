@@ -1,0 +1,23 @@
+gatherings:
+- name: Sunday Worship
+  day: Sunday
+  time: 10:00 AM
+  venue: Chapel, Mel Lloyd Centre
+  entrance: Door F
+  status: published-consistently
+- name: Morning Bible Study
+  day: Tuesday
+  time: 10:00 AM
+  venue: Mel Lloyd Centre
+  entrance: Door F
+  status: time-published-consistently
+  current_topic: Confirm with church
+- name: Evening Bible Study
+  day: Wednesday
+  time: 7:00 PM
+  venue: Mel Lloyd Centre
+  entrance: Door F
+  status: time-published-consistently
+  current_topic: Confirm with church
+editor_note: Legacy pages conflict on Bible-study topics and contain undated event
+  listings. Never publish a study topic or special event as current without confirmation.

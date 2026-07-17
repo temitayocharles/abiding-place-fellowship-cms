@@ -1,11 +1,17 @@
-phone: "519-925-3651"
-cell: "519-216-1804"
-email: "abidingplaceministries@sympatico.ca"
-address: "167 Centre St, Shelburne, ON L9V 3R8"
+phone: 519-925-3651
+cell: 519-216-1804
+email: abidingplaceministries@sympatico.ca
+venue: Chapel, Mel Lloyd Centre
+address: 167 Centre Street, Shelburne, Ontario
+entrance: Door F
 service_times:
-  - day: "Sundays"
-    time: "10:00 AM"
-  - day: "Tuesdays"
-    time: "10:00 AM"
-  - day: "Wednesdays"
-    time: "7:00 PM"
+- day: Sunday
+  time: 10:00 AM
+  name: Sunday Worship
+- day: Tuesday
+  time: 10:00 AM
+  name: Morning Bible Study
+- day: Wednesday
+  time: 7:00 PM
+  name: Evening Bible Study
+editor_note: Confirm Bible-study topics and special-event schedules before publication.

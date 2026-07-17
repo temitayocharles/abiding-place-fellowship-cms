@@ -1,0 +1,28 @@
+leadership:
+- name: Rev. Gord Horsley
+  role: Founder and Senior Pastor
+  verified: true
+  bio: The official ministry history says Rev. Gord Horsley and his wife Kate have
+    served in Christian ministry for more than 30 years, including missions, youth
+    ministry, inner healing, prayer counselling and church planting. Public local
+    reporting also identifies him as a senior pastor and former chair of the Shelburne
+    Ministerial.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/Gord-Kate-739x1024.jpg
+- name: Kate Horsley
+  role: Ministry partner
+  verified: true
+  bio: The official ministry page describes Kate as active in prophetic ministry,
+    intercession and worship, and as bringing wisdom and balance to the ministry leadership.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/Gord-Kate-739x1024.jpg
+- name: Leadership Team
+  role: Team details require church confirmation
+  verified: true
+  bio: The official site describes a leadership team drawn from different backgrounds,
+    cultures and vocations. It does not publish a current roster with confirmed titles.
+  photo: https://abidingplace.ca/wp-content/uploads/2021/12/Leadership-1024x768.jpg
+prohibited_without_confirmation:
+- Assigning current staff titles to Dr. Carol McLean, Emmanuel Dapaah, Bethany Horsley
+  or Bob Sibean
+- Publishing individual biographies not supplied or approved by the church
+- Using a person’s appearance in an old event schedule as proof of a current staff
+  role

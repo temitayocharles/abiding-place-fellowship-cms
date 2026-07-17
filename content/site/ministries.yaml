@@ -1,0 +1,44 @@
+source: https://abidingplace.ca/ministries/
+ministries:
+- name: Children’s Ministry
+  summary: Interactive Biblical teaching using music, games, drama and crafts, with
+    an emphasis on the Father’s love and the gifts of Holy Spirit.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/kidschurch-934x1024.jpg
+  current_schedule: Confirm with church
+- name: Worship Ministry
+  summary: A varied team of worship leaders using hymns and contemporary music while
+    seeking the leading of Holy Spirit.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/FPWorship3-1024x684.jpg
+  current_schedule: Sunday worship and other gatherings as confirmed
+- name: Women’s Ministry
+  summary: Women growing in Scripture, relationship with Christ and relationship with
+    one another.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/womens-1024x689.jpg
+  current_schedule: Confirm with church
+- name: Men’s Ministry
+  summary: Men encouraging one another in faith, integrity, family life and service.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/mensministry-1024x667.jpg
+  current_schedule: Confirm with church
+- name: Bible Study and Prayer
+  summary: Tuesday morning and Wednesday evening Bible studies at the Mel Lloyd Centre.
+  current_schedule: Tuesday 10:00 AM and Wednesday 7:00 PM; confirm current topic
+- name: Legion Ministry
+  summary: Pastoral support for veterans and members of Royal Canadian Legion Branch
+    220, including visits, funerals and commemorative services.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/legion-1024x675.jpg
+  current_schedule: Confirm with church and Legion
+- name: Seniors Ministry
+  summary: Devotions, church-service participation and chaplaincy support involving
+    residents of Dufferin Oaks.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/oaksministry-1024x615.jpg
+  current_schedule: Confirm with church and Dufferin Oaks
+- name: Missions and Partnerships
+  summary: Published relationships involving Grenada, Haiti, Uganda and international
+    Christian partners.
+  photo: https://abidingplace.ca/wp-content/uploads/2022/01/missions-278.jpg
+  current_schedule: Describe as historical or continuing only after confirmation
+unsupported_claims_removed:
+- Weekly youth programme for Grades 6 to 12
+- Monthly women’s gatherings
+- Monthly men’s breakfasts
+- Current retreats or youth mission trips

@@ -2,86 +2,133 @@ backend:
   name: git-gateway
   branch: main
   commit_messages:
-    create: "Add {{title}}"
-    update: "Update {{title}}"
-    delete: "Delete {{title}}"
-    upload_media: "Upload media: {{path}}"
+    create: "Add {{collection}}: {{slug}}"
+    update: "Update {{collection}}: {{slug}}"
+    delete: "Delete {{collection}}: {{slug}}"
+    upload_media: "Upload approved media: {{path}}"
     delete_media: "Delete media: {{path}}"
 
 media_folder: "assets/uploads"
-public_folder: "/uploads"
-media_folder_external_url: "https://abiding-place-ministries.netlify.app/uploads"
+public_folder: "/assets/uploads"
 
 collections:
-  - name: "site"
+  - name: "site_settings"
     label: "Site Settings"
-    folder: "config"
-    create: true
     files:
+      - name: "site"
+        label: "Site Identity"
+        file: "config/site.yaml"
+        fields:
+          - {label: "Public name", name: "name", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - {label: "Founded", name: "founded", widget: "number", value_type: "int"}
+          - {label: "Legacy official site", name: "official_legacy_site", widget: "string"}
+          - {label: "Public preview", name: "public_preview", widget: "string"}
       - name: "contact"
-        label: "Contact Information"
+        label: "Contact and Weekly Gatherings"
         file: "config/contact.yaml"
         fields:
-          - {label: Phone, name: phone, widget: string}
-          - {label: Cell, name: cell, widget: string}
-          - {label: Email, name: email, widget: string}
-          - {label: Address, name: address, widget: string}
-          - label: "Service Times"
-            name: service_times
-            widget: list
+          - {label: "Phone", name: "phone", widget: "string"}
+          - {label: "Cell", name: "cell", widget: "string"}
+          - {label: "Email", name: "email", widget: "string"}
+          - {label: "Venue", name: "venue", widget: "string"}
+          - {label: "Address", name: "address", widget: "string"}
+          - {label: "Entrance", name: "entrance", widget: "string"}
+          - label: "Service times"
+            name: "service_times"
+            widget: "list"
             fields:
-              - {label: Day, name: day, widget: string}
-              - {label: Time, name: time, widget: string}
+              - {label: "Day", name: "day", widget: "string"}
+              - {label: "Time", name: "time", widget: "string"}
+              - {label: "Name", name: "name", widget: "string"}
+          - {label: "Editor note", name: "editor_note", widget: "text"}
 
-  - name: "team"
-    label: "Leadership Team"
-    folder: "content/team"
-    create: true
-    fields:
-      - {label: Name, name: name, widget: string}
-      - {label: Role, name: role, widget: string}
-      - {label: Bio, name: bio, widget: text}
-      - {label: Photo Initials, name: initials, widget: string}
-      - label: "Color Theme"
-        name: color
-        widget: select
-        options:
-          - label: "Primary Blue"
-            value: "#2563EB"
-          - label: "Secondary Green"
-            value: "#059669"
-          - label: "Accent Orange"
-            value: "#D97706"
-
-  - name: "events"
-    label: "Events & Services"
-    folder: "content/events"
-    create: true
-    editor:
-      preview: false
-    fields:
-      - {label: Title, name: title, widget: string}
-      - {label: Date/Time, name: date, widget: string}
-      - {label: Location, name: location, widget: string}
-      - {label: Description, name: description, widget: text}
-      - label: "Color Theme"
-        name: color
-        widget: select
-        options:
-          - label: "Primary Blue"
-            value: "#2563EB"
-          - label: "Secondary Green"
-            value: "#059669"
-          - label: "Accent Orange"
-            value: "#D97706"
-      - {label: Show on Home Page, name: show_on_home, widget: boolean, default: true}
-
-  - name: "ministries"
-    label: "Ministries"
-    folder: "content/ministries"
-    create: true
-    fields:
-      - {label: Name, name: name, widget: string}
-      - {label: Age/Grade Group, name: group, widget: string}
-      - {label: Description, name: description, widget: text}
-      - {label: Icon, name: icon, widget: string}
+  - name: "verified_content"
+    label: "Verified Church Content"
+    files:
+      - name: "church"
+        label: "Church Overview"
+        file: "content/site/church.yaml"
+        fields:
+          - {label: "Name", name: "name", widget: "string"}
+          - {label: "Ministry name", name: "ministry_name", widget: "string"}
+          - {label: "Mission summary", name: "mission_summary", widget: "text"}
+          - {label: "Source", name: "source", widget: "string"}
+          - {label: "Verification status", name: "verification_status", widget: "text"}
+      - name: "leadership"
+        label: "Leadership"
+        file: "content/site/leadership.yaml"
+        fields:
+          - label: "Leadership entries"
+            name: "leadership"
+            widget: "list"
+            fields:
+              - {label: "Name", name: "name", widget: "string"}
+              - {label: "Role", name: "role", widget: "string"}
+              - {label: "Verified", name: "verified", widget: "boolean"}
+              - {label: "Biography", name: "bio", widget: "text"}
+              - {label: "Photo URL", name: "photo", widget: "string", required: false}
+          - label: "Prohibited without confirmation"
+            name: "prohibited_without_confirmation"
+            widget: "list"
+            field: {label: "Restriction", name: "restriction", widget: "string"}
+      - name: "faith"
+        label: "Statement of Faith"
+        file: "content/site/faith.yaml"
+        fields:
+          - {label: "Source", name: "source", widget: "string"}
+          - {label: "Editor note", name: "editor_note", widget: "text"}
+          - label: "Beliefs"
+            name: "beliefs"
+            widget: "list"
+            fields:
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Text", name: "text", widget: "text"}
+      - name: "ministries"
+        label: "Ministries"
+        file: "content/site/ministries.yaml"
+        fields:
+          - {label: "Source", name: "source", widget: "string"}
+          - label: "Ministries"
+            name: "ministries"
+            widget: "list"
+            fields:
+              - {label: "Name", name: "name", widget: "string"}
+              - {label: "Summary", name: "summary", widget: "text"}
+              - {label: "Photo URL", name: "photo", widget: "string", required: false}
+              - {label: "Current schedule", name: "current_schedule", widget: "string"}
+      - name: "missions"
+        label: "Missions"
+        file: "content/site/missions.yaml"
+        fields:
+          - {label: "Source", name: "source", widget: "string"}
+          - {label: "Editor note", name: "editor_note", widget: "text"}
+          - label: "Mission relationships"
+            name: "missions"
+            widget: "list"
+            fields:
+              - {label: "Place", name: "place", widget: "string"}
+              - {label: "Relationship", name: "relationship", widget: "text"}
+              - {label: "Media category", name: "media_category", widget: "string"}
+      - name: "partners"
+        label: "Partners and Friends"
+        file: "content/site/partners.yaml"
+        fields:
+          - {label: "Source", name: "source", widget: "string"}
+          - {label: "Editor note", name: "editor_note", widget: "text"}
+          - label: "Partners"
+            name: "partners"
+            widget: "list"
+            field: {label: "Partner", name: "partner", widget: "string"}
+      - name: "community_history"
+        label: "Community History"
+        file: "content/site/community-history.yaml"
+        fields:
+          - label: "Historical highlights"
+            name: "historical_highlights"
+            widget: "list"
+            fields:
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Date", name: "date", widget: "string"}
+              - {label: "Source", name: "source", widget: "string"}
+          - {label: "Editor note", name: "editor_note", widget: "text"}
