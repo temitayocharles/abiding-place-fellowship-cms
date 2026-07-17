@@ -1,17 +1,17 @@
-phone: 519-925-3651
-cell: 519-216-1804
-email: abidingplaceministries@sympatico.ca
-venue: Chapel, Mel Lloyd Centre
-address: 167 Centre Street, Shelburne, Ontario
-entrance: Door F
+phone: "519-925-3651"
+cell: ""
+email: "abidingplaceministries@sympatico.ca"
+venue: "Prunefolk Group"
+address: "167 Centre St, Shelburne, ON L9V 3R8"
+entrance: "Use Door F entrance"
 service_times:
-- day: Sunday
-  time: 10:00 AM
-  name: Sunday Worship
-- day: Tuesday
-  time: 10:00 AM
-  name: Morning Bible Study
-- day: Wednesday
-  time: 7:00 PM
-  name: Evening Bible Study
-editor_note: Confirm Bible-study topics and special-event schedules before publication.
+  - day: "Sundays"
+    time: "10:00 AM"
+    name: "Worship & Bible Study"
+  - day: "Tuesdays"
+    time: "10:00 AM"
+    name: "Community Bible Study"
+  - day: "Wednesdays"
+    time: "7:00 PM"
+    name: "Evening Gathering"
+editor_notes: "Verify with Pastor Gord before publishing new service times or contact info."

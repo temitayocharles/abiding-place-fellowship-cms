@@ -3,218 +3,187 @@ const path = require('path');
 const yaml = require('yaml');
 const { marked } = require('marked');
 
-// Project root
-const ROOT_DIR = path.resolve(__dirname, '..');
-const CONFIG_DIR = path.join(ROOT_DIR, 'config');
-const CONTENT_DIR = path.join(ROOT_DIR, 'content');
-const OUTPUT_DIR = path.join(ROOT_DIR, 'public');
-
-// Helper to read YAML file
-function readYaml(filePath) {
-  const content = fs.readFileSync(filePath, 'utf8');
-  return yaml.parse(content);
-}
-
-// Helper to read template
-function readTemplate(templateName) {
-  return fs.readFileSync(path.join(ROOT_DIR, 'templates', templateName), 'utf8');
-}
-
-// Helper to create HTML with injected content
-function createPage(templateName, data) {
-  let template = readTemplate(templateName);
-  
-  // Inject content
+// Helper to replace Handlebars-style templates
+function renderTemplate(template, data) {
+  // Replace simple {{key}} variables
   Object.keys(data).forEach(key => {
-    const placeholder = `{{${key}}}`;
     const value = data[key];
+    const placeholder = `{{${key}}}`;
     
-    if (typeof value === 'object' && !Array.isArray(value)) {
-      // Convert nested objects to JSON for complex fields
-      template = template.replace(placeholder, `<div data-json='${JSON.stringify(value)}'>${JSON.stringify(value)}</div>`);
+    if (typeof value === 'string') {
+      template = template.split(placeholder).join(value || '');
     } else if (Array.isArray(value)) {
-      // Handle lists (e.g., service times)
-      const listHtml = value.map(item => {
-        if (typeof item === 'object') {
-          const rows = Object.entries(item).map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`).join('');
-          return `<div class='list-item'>${rows}</div>`;
-        }
-        return `<div>${item}</div>`;
-      }).join('');
-      template = template.replace(placeholder, `<div class='list-container'>${listHtml}</div>`);
-    } else if (typeof value === 'string' && value.includes('\n')) {
-      // Handle multi-line text (markdown support)
-      template = template.replace(placeholder, marked.parse(value));
+      // Will be handled by #each blocks
     } else {
-      template = template.replace(placeholder, value || '');
+      template = template.split(placeholder).join(JSON.stringify(value));
     }
   });
-  
+
+  // Handle {{#each}} blocks
+  template = template.replace(/\{\{#each (\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, collectionName, innerTemplate) => {
+    const items = data[collectionName] || [];
+    if (!items.length) return '';
+    
+    return items.map((item, index) => {
+      let rendered = innerTemplate;
+      // Inject item-specific variables
+      Object.keys(item).forEach(key => {
+        rendered = rendered.split(`{{${key}}}`).join(item[key] || '');
+      });
+      // Inject parent-level variables
+      Object.keys(data).forEach(key => {
+        rendered = rendered.split(`{{${key}}}`).join(data[key] || '');
+      });
+      // Handle nested {{#if}} blocks
+      rendered = rendered.replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (m, cond, content) => {
+        return item[cond] ? content : '';
+      });
+      // Handle {{substring}} helper
+      rendered = rendered.replace(/\{\{substring "(\w+)" (\d) (\d)\}\}/g, (m, str, start, len) => {
+        return str.substring(start, start + parseInt(len));
+      });
+      // Handle {{substring item key}} syntax
+      rendered = rendered.replace(/\{\{substring ([^\s]+) ([^\s]+) ([^\s]+)\}\}/g, (m, obj, prop, len) => {
+        const value = item[prop] || '';
+        return value.substring(0, parseInt(len));
+      });
+      return rendered;
+    }).join('');
+  });
+
+  // Handle {{#if}} blocks
+  template = template.replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{{\/if\}\}/g, (match, condition, content) => {
+    const value = data[condition];
+    return (value && value.length > 0) ? content : '';
+  });
+
+  // Process markdown in text fields
+  template = template.replace(/\{\{!markdown (.*?)\}\}/g, (match, mdContent) => {
+    return marked.parse(mdContent);
+  });
+
   return template;
 }
 
-// Build all pages
+// Project directories
+const ROOT = path.resolve(__dirname, '..');
+const CONFIG_DIR = path.join(ROOT, 'config');
+const CONTENT_DIR = path.join(ROOT, 'content');
+const PUBLIC_DIR = path.join(ROOT, 'public');
+const TEMPLATES_DIR = path.join(ROOT, 'templates');
+
+function loadYaml(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+  return yaml.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function loadCollection(folderPath) {
+  if (!fs.existsSync(folderPath)) return [];
+  const files = fs.readdirSync(folderPath).filter(f => f.endsWith('.yaml'));
+  return files.map(f => loadYaml(path.join(folderPath, f))).filter(Boolean);
+}
+
+function buildPage(templateName, data) {
+  const template = fs.readFileSync(path.join(TEMPLATES_DIR, templateName), 'utf8');
+  return renderTemplate(template, data);
+}
+
 async function build() {
   console.log('🏗️  Building pages from CMS content...\n');
   
-  // Ensure output directory exists
-  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  // Ensure public directory exists
+  fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+
+  // Load shared data
+  const siteConfig = loadYaml(path.join(CONFIG_DIR, 'site.yaml')) || {};
+  const contactConfig = loadYaml(path.join(CONFIG_DIR, 'contact.yaml')) || {};
   
-  // 1. Build Contact Page
-  try {
-    const contactData = readYaml(path.join(CONFIG_DIR, 'contact.yaml'));
-    const siteData = readYaml(path.join(CONFIG_DIR, 'site.yaml'));
-    
-    const contactContent = {
-      phone: contactData.phone,
-      cell: contactData.cell,
-      email: contactData.email,
-      address: contactData.address,
-      service_times: contactData.service_times,
-      site_name: siteData.name || 'Abiding Place Fellowship'
-    };
-    
-    const contactHtml = createPage('contact.html', contactContent);
-    fs.writeFileSync(path.join(OUTPUT_DIR, 'contact.html'), contactHtml);
-    console.log('✅ Generated contact.html');
-  } catch (error) {
-    console.error('❌ Error building contact.html:', error.message);
-  }
-  
-  // 2. Build Team Members (About Page)
-  try {
-    const teamDir = path.join(CONTENT_DIR, 'team');
-    if (fs.existsSync(teamDir)) {
-      const teamFiles = fs.readdirSync(teamDir).filter(f => f.endsWith('.yaml'));
-      const teamMembers = teamFiles.map(file => {
-        const content = readYaml(path.join(teamDir, file));
-        return content;
-      });
-      
-      const teamContent = {
-        members: teamMembers,
-        team_count: teamMembers.length
-      };
-      
-      const aboutHtml = createPage('about.html', teamContent);
-      fs.writeFileSync(path.join(OUTPUT_DIR, 'about.html'), aboutHtml);
-      console.log(`✅ Generated about.html with ${teamMembers.length} team members`);
-    } else {
-      console.log('⚠️  No team content found in content/team/');
+  const siteName = siteConfig.name || 'Abiding Place Fellowship';
+  const description = siteConfig.description || 'A Christian fellowship in Shelburne, Ontario';
+  const { phone, address, email, service_times = [] } = contactConfig;
+
+  // Build Team/About page
+  const teamMembers = loadCollection(path.join(CONTENT_DIR, 'team'));
+  const aboutHtml = buildPage('about.html', {
+    site_name: siteName,
+    members: teamMembers,
+    phone,
+    email
+  });
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'about.html'), aboutHtml);
+  console.log(`✅ about.html (${teamMembers.length} team members)`);
+
+  // Build Events page
+  const events = loadCollection(path.join(CONTENT_DIR, 'events'));
+  const eventsHtml = buildPage('events.html', {
+    site_name: siteName,
+    events: events.sort((a, b) => new Date(a.date) - new Date(b.date))
+  });
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'events.html'), eventsHtml);
+  console.log(`✅ events.html (${events.length} events)`);
+
+  // Build Ministries page
+  const ministries = loadCollection(path.join(CONTENT_DIR, 'ministries'));
+  const ministriesHtml = buildPage('ministries.html', {
+    site_name: siteName,
+    ministries: ministries
+  });
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'ministries.html'), ministriesHtml);
+  console.log(`✅ ministries.html (${ministries.length} ministries)`);
+
+  // Build Contact page
+  const contactHtml = buildPage('contact.html', {
+    site_name: siteName,
+    phone,
+    cell: contactConfig.cell || '',
+    email,
+    address,
+    venue: contactConfig.venue || '',
+    entrance: contactConfig.entrance || '',
+    service_times
+  });
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'contact.html'), contactHtml);
+  console.log('✅ contact.html');
+
+  // Build Home page
+  const homeEvents = events.filter(e => e.show_on_home !== false).slice(0, 3);
+  const homeHtml = buildPage('index.html', {
+    site_name: siteName,
+    description,
+    phone,
+    address,
+    email,
+    service_times,
+    events: homeEvents
+  });
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'index.html'), homeHtml);
+  console.log('✅ index.html');
+
+  // Copy static assets
+  const staticFiles = ['admin.html', 'css/theme.css', 'mobile-nav.js', 'design-system.json'];
+  staticFiles.forEach(file => {
+    const src = path.join(ROOT, file);
+    if (fs.existsSync(src)) {
+      const dest = path.join(PUBLIC_DIR, file);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.copyFileSync(src, dest);
+      console.log(`✅ Copied ${file}`);
     }
-  } catch (error) {
-    console.error('❌ Error building about.html:', error.message);
+  });
+
+  // Copy assets folder
+  const assetsSrc = path.join(ROOT, 'assets');
+  if (fs.existsSync(assetsSrc)) {
+    const assetsDest = path.join(PUBLIC_DIR, 'assets');
+    fs.cpSync(assetsSrc, assetsDest, { recursive: true });
+    console.log('✅ Copied assets/');
   }
-  
-  // 3. Build Events Page
-  try {
-    const eventsDir = path.join(CONTENT_DIR, 'events');
-    if (fs.existsSync(eventsDir)) {
-      const eventFiles = fs.readdirSync(eventsDir).filter(f => f.endsWith('.yaml'));
-      const events = eventFiles.map(file => {
-        const content = readYaml(path.join(eventsDir, file));
-        return content;
-      });
-      
-      const eventsContent = {
-        events: events,
-        event_count: events.length
-      };
-      
-      const eventsHtml = createPage('events.html', eventsContent);
-      fs.writeFileSync(path.join(OUTPUT_DIR, 'events.html'), eventsHtml);
-      console.log(`✅ Generated events.html with ${events.length} events`);
-    } else {
-      console.log('⚠️  No events content found in content/events/');
-    }
-  } catch (error) {
-    console.error('❌ Error building events.html:', error.message);
-  }
-  
-  // 4. Build Ministries Page
-  try {
-    const ministriesDir = path.join(CONTENT_DIR, 'ministries');
-    if (fs.existsSync(ministriesDir)) {
-      const ministryFiles = fs.readdirSync(ministriesDir).filter(f => f.endsWith('.yaml'));
-      const ministries = ministryFiles.map(file => {
-        const content = readYaml(path.join(ministriesDir, file));
-        return content;
-      });
-      
-      const ministriesContent = {
-        ministries: ministries,
-        ministry_count: ministries.length
-      };
-      
-      const ministriesHtml = createPage('ministries.html', ministriesContent);
-      fs.writeFileSync(path.join(OUTPUT_DIR, 'ministries.html'), ministriesHtml);
-      console.log(`✅ Generated ministries.html with ${ministries.length} ministries`);
-    } else {
-      console.log('⚠️  No ministries content found in content/ministries/');
-    }
-  } catch (error) {
-    console.error('❌ Error building ministries.html:', error.message);
-  }
-  
-  // 5. Build Index (Home) Page - combines contact + events
-  try {
-    const contactData = readYaml(path.join(CONFIG_DIR, 'contact.yaml'));
-    const siteData = readYaml(path.join(CONFIG_DIR, 'site.yaml'));
-    
-    const eventsDir = path.join(CONTENT_DIR, 'events');
-    let events = [];
-    if (fs.existsSync(eventsDir)) {
-      const eventFiles = fs.readdirSync(eventsDir).filter(f => f.endsWith('.yaml'));
-      events = eventFiles.map(file => readYaml(path.join(eventsDir, file)));
-    }
-    
-    const homeContent = {
-      site_name: siteData.name || 'Abiding Place Fellowship',
-      description: siteData.description || 'A Christian fellowship in Shelburne',
-      phone: contactData.phone,
-      address: contactData.address,
-      service_times: contactData.service_times,
-      events: events.slice(0, 3), // Show latest 3 events on home
-      event_count: events.length
-    };
-    
-    const homeHtml = createPage('index.html', homeContent);
-    fs.writeFileSync(path.join(OUTPUT_DIR, 'index.html'), homeHtml);
-    console.log('✅ Generated index.html (home page)');
-  } catch (error) {
-    console.error('❌ Error building index.html:', error.message);
-  }
-  
-  // 6. Copy admin.html, CSS, JS, and assets to public
-  try {
-    const filesToCopy = ['admin.html', 'css/theme.css', 'mobile-nav.js', 'design-system.json'];
-    filesToCopy.forEach(file => {
-      const src = path.join(ROOT_DIR, file);
-      const dest = path.join(OUTPUT_DIR, file);
-      if (fs.existsSync(src)) {
-        fs.mkdirSync(path.dirname(dest), { recursive: true });
-        fs.copyFileSync(src, dest);
-        console.log(`✅ Copied ${file}`);
-      }
-    });
-    
-    // Copy assets/uploads if exists
-    const assetsDir = path.join(ROOT_DIR, 'assets');
-    if (fs.existsSync(assetsDir)) {
-      const destAssetsDir = path.join(OUTPUT_DIR, 'assets');
-      fs.cpSync(assetsDir, destAssetsDir, { recursive: true });
-      console.log('✅ Copied assets/');
-    }
-  } catch (error) {
-    console.error('❌ Error copying static files:', error.message);
-  }
-  
-  console.log('\n🎉 Build complete! Generated files in /public/');
-  console.log('📁 Output directory:', OUTPUT_DIR);
+
+  console.log('\n🎉 Build complete!');
+  console.log('📁 Output:', PUBLIC_DIR);
 }
 
-// Run build
-build().catch(error => {
-  console.error('💥 Build failed:', error);
+build().catch(err => {
+  console.error('💥 Build failed:', err);
   process.exit(1);
 });

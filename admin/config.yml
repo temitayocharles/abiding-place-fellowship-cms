@@ -2,10 +2,10 @@ backend:
   name: git-gateway
   branch: main
   commit_messages:
-    create: "Add {{collection}}: {{slug}}"
-    update: "Update {{collection}}: {{slug}}"
-    delete: "Delete {{collection}}: {{slug}}"
-    upload_media: "Upload approved media: {{path}}"
+    create: "Add [{{collection}}] {{slug}}"
+    update: "Update [{{collection}}] {{slug}}"
+    delete: "Delete [{{collection}}] {{slug}}"
+    upload_media: "Upload media: {{path}}"
     delete_media: "Delete media: {{path}}"
 
 media_folder: "assets/uploads"
@@ -13,7 +13,7 @@ public_folder: "/assets/uploads"
 
 collections:
   - name: "site_settings"
-    label: "Site Settings"
+    label: "📋 Site Settings"
     files:
       - name: "site"
         label: "Site Identity"
@@ -21,114 +21,92 @@ collections:
         fields:
           - {label: "Public name", name: "name", widget: "string"}
           - {label: "Description", name: "description", widget: "text"}
-          - {label: "Founded", name: "founded", widget: "number", value_type: "int"}
-          - {label: "Legacy official site", name: "official_legacy_site", widget: "string"}
-          - {label: "Public preview", name: "public_preview", widget: "string"}
+          - {label: "Founded year", name: "founded", widget: "number", value_type: "int", required: false}
+          - {label: "Legacy site URL", name: "official_legacy_site", widget: "string", required: false}
+          - {label: "Contact email", name: "email", widget: "string"}
+
       - name: "contact"
-        label: "Contact and Weekly Gatherings"
+        label: "Contact & Times"
         file: "config/contact.yaml"
         fields:
           - {label: "Phone", name: "phone", widget: "string"}
-          - {label: "Cell", name: "cell", widget: "string"}
+          - {label: "Cell", name: "cell", widget: "string", required: false}
           - {label: "Email", name: "email", widget: "string"}
-          - {label: "Venue", name: "venue", widget: "string"}
+          - {label: "Venue name", name: "venue", widget: "string"}
           - {label: "Address", name: "address", widget: "string"}
-          - {label: "Entrance", name: "entrance", widget: "string"}
+          - {label: "Entrance instructions", name: "entrance", widget: "text", required: false}
           - label: "Service times"
             name: "service_times"
             widget: "list"
             fields:
               - {label: "Day", name: "day", widget: "string"}
               - {label: "Time", name: "time", widget: "string"}
-              - {label: "Name", name: "name", widget: "string"}
-          - {label: "Editor note", name: "editor_note", widget: "text"}
+              - {label: "Name/Type", name: "name", widget: "string", required: false}
+          - {label: "Editor notes", name: "editor_notes", widget: "text", required: false}
 
-  - name: "verified_content"
-    label: "Verified Church Content"
-    files:
-      - name: "church"
-        label: "Church Overview"
-        file: "content/site/church.yaml"
-        fields:
-          - {label: "Name", name: "name", widget: "string"}
-          - {label: "Ministry name", name: "ministry_name", widget: "string"}
-          - {label: "Mission summary", name: "mission_summary", widget: "text"}
-          - {label: "Source", name: "source", widget: "string"}
-          - {label: "Verification status", name: "verification_status", widget: "text"}
-      - name: "leadership"
-        label: "Leadership"
-        file: "content/site/leadership.yaml"
-        fields:
-          - label: "Leadership entries"
-            name: "leadership"
-            widget: "list"
-            fields:
-              - {label: "Name", name: "name", widget: "string"}
-              - {label: "Role", name: "role", widget: "string"}
-              - {label: "Verified", name: "verified", widget: "boolean"}
-              - {label: "Biography", name: "bio", widget: "text"}
-              - {label: "Photo URL", name: "photo", widget: "string", required: false}
-          - label: "Prohibited without confirmation"
-            name: "prohibited_without_confirmation"
-            widget: "list"
-            field: {label: "Restriction", name: "restriction", widget: "string"}
-      - name: "faith"
-        label: "Statement of Faith"
-        file: "content/site/faith.yaml"
-        fields:
-          - {label: "Source", name: "source", widget: "string"}
-          - {label: "Editor note", name: "editor_note", widget: "text"}
-          - label: "Beliefs"
-            name: "beliefs"
-            widget: "list"
-            fields:
-              - {label: "Title", name: "title", widget: "string"}
-              - {label: "Text", name: "text", widget: "text"}
-      - name: "ministries"
-        label: "Ministries"
-        file: "content/site/ministries.yaml"
-        fields:
-          - {label: "Source", name: "source", widget: "string"}
-          - label: "Ministries"
-            name: "ministries"
-            widget: "list"
-            fields:
-              - {label: "Name", name: "name", widget: "string"}
-              - {label: "Summary", name: "summary", widget: "text"}
-              - {label: "Photo URL", name: "photo", widget: "string", required: false}
-              - {label: "Current schedule", name: "current_schedule", widget: "string"}
-      - name: "missions"
-        label: "Missions"
-        file: "content/site/missions.yaml"
-        fields:
-          - {label: "Source", name: "source", widget: "string"}
-          - {label: "Editor note", name: "editor_note", widget: "text"}
-          - label: "Mission relationships"
-            name: "missions"
-            widget: "list"
-            fields:
-              - {label: "Place", name: "place", widget: "string"}
-              - {label: "Relationship", name: "relationship", widget: "text"}
-              - {label: "Media category", name: "media_category", widget: "string"}
-      - name: "partners"
-        label: "Partners and Friends"
-        file: "content/site/partners.yaml"
-        fields:
-          - {label: "Source", name: "source", widget: "string"}
-          - {label: "Editor note", name: "editor_note", widget: "text"}
-          - label: "Partners"
-            name: "partners"
-            widget: "list"
-            field: {label: "Partner", name: "partner", widget: "string"}
-      - name: "community_history"
-        label: "Community History"
-        file: "content/site/community-history.yaml"
-        fields:
-          - label: "Historical highlights"
-            name: "historical_highlights"
-            widget: "list"
-            fields:
-              - {label: "Title", name: "title", widget: "string"}
-              - {label: "Date", name: "date", widget: "string"}
-              - {label: "Source", name: "source", widget: "string"}
-          - {label: "Editor note", name: "editor_note", widget: "text"}
+  - name: "team"
+    label: "👥 Leadership Team"
+    folder: "content/team"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Full name", name: "name", widget: "string"}
+      - {label: "Role/Title", name: "role", widget: "string"}
+      - {label: "Biography", name: "bio", widget: "text", required: false}
+      - label: "Color theme"
+        name: "color"
+        widget: "select"
+        options:
+          - label: "Blue"
+            value: "#2563EB"
+          - label: "Green"
+            value: "#059669"
+          - label: "Orange"
+            value: "#D97706"
+      - {label: "Verified", name: "verified", widget: "boolean", default: false, required: false}
+      - {label: "Photo file (upload to /assets/uploads/)", name: "photo", widget: "image", required: false}
+
+  - name: "events"
+    label: "📅 Events & Services"
+    folder: "content/events"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Event title", name: "title", widget: "string"}
+      - {label: "Date/Time", name: "date", widget: "string"}
+      - {label: "Location", name: "location", widget: "string", required: false}
+      - {label: "Description", name: "description", widget: "text"}
+      - label: "Color theme"
+        name: "color"
+        widget: "select"
+        options:
+          - label: "Blue"
+            value: "#2563EB"
+          - label: "Green"
+            value: "#059669"
+          - label: "Orange"
+            value: "#D97706"
+      - {label: "Show on homepage", name: "show_on_home", widget: "boolean", default: true}
+      - {label: "Verified source", name: "verified", widget: "boolean", default: false, required: false}
+
+  - name: "ministries"
+    label: "🏛️ Ministries"
+    folder: "content/ministries"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Ministry name", name: "name", widget: "string"}
+      - {label: "Target group/age", name: "group", widget: "string", required: false}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Icon/Emoji", name: "icon", widget: "string", required: false, hint: "Optional emoji like 👶 👦 👩‍🦳"}
+      - label: "Color theme"
+        name: "color"
+        widget: "select"
+        options:
+          - label: "Blue"
+            value: "#2563EB"
+          - label: "Green"
+            value: "#059669"
+          - label: "Orange"
+            value: "#D97706"
+      - {label: "Verified source", name: "verified", widget: "boolean", default: false, required: false}

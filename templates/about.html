@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us - {{site_name}}</title>
+  <title>About - {{site_name}}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
-  <!-- Navigation (same as home) -->
   <nav class="navbar">
     <div class="navbar-container">
       <a href="/" class="navbar-brand">{{site_name}}</a>
+      <button class="navbar-toggle" aria-expanded="false" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
       <ul class="navbar-menu">
         <li><a href="/">Home</a></li>
         <li><a href="/about.html" class="active">About</a></li>
@@ -21,45 +23,59 @@
         <li><a href="/events.html">Events</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
+      <a href="/admin.html" class="navbar-cta">CMS Login</a>
     </div>
   </nav>
 
-  <header class="hero hero-small">
+  <header class="hero">
     <div class="container">
-      <h1>Our Leadership Team</h1>
-      <p>Meet the pastors and leaders serving {{site_name}}</p>
+      <h1>Our Leadership</h1>
+      <p>Meet the team serving our community</p>
     </div>
   </header>
 
   <main>
     <section class="section section-light">
       <div class="container">
+        {{#if members.length}}
         <div class="team-grid">
           {{#each members}}
           <div class="team-card">
-            <div class="team-photo" style="background: linear-gradient(135deg, {{this.color}}, #6B7280); color: #fff;">
-              {{this.initials}}
+            <div class="team-avatar" style="background:linear-gradient(135deg, {{this.color}} 0%, {{this.color}}dd 100%);color:#fff">
+              {{#if this.photo}}
+                <img src="{{this.photo}}" alt="{{this.name}}" style="width:100%;height:100%;object-fit:cover">
+              {{else}}
+                <span style="font-size:2rem;font-weight:700">{{substring this.name 0 2}}</span>
+              {{/if}}
             </div>
-            <h3 class="team-name">{{this.name}}</h3>
-            <p class="team-role">{{this.role}}</p>
-            <div class="team-bio">
-              {{{this.bio}}}
-            </div>
+            <h3>{{this.name}}</h3>
+            <p style="color:var(--primary);font-weight:600">{{this.role}}</p>
+            {{#if this.bio}}
+            <p>{{this.bio}}</p>
+            {{/if}}
+            {{#if this.verified}}
+            <span style="color:#059669;font-size:0.875rem">✓ Verified</span>
+            {{/if}}
           </div>
           {{/each}}
         </div>
-        
-        {{#if (lt team_count 1)}}
-        <p class="no-members">No team members added yet. <a href="/admin.html">Add team members via CMS</a></p>
+        {{else}}
+        <div style="text-align:center;padding:4rem 0">
+          <h2>No team members added yet</h2>
+          <p style="color:var(--muted)">Contact information:<br>Phone: {{phone}} | Email: {{email}}</p>
+          <p style="margin-top:2rem"><a href="/admin.html" style="color:var(--primary)">Add team members via CMS →</a></p>
+        </div>
         {{/if}}
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="container">
-      <p>&copy; 2026 {{site_name}}. All rights reserved.</p>
+    <div class="footer-container">
+      <div><h3 style="color:#fff">{{site_name}}</h3><p>Welcoming Christian community in Shelburne</p></div>
+      <div><h3 style="color:#fff">Contact</h3><p>{{phone}}</p><p>{{email}}</p><p>{{address}}</p></div>
     </div>
+    <p style="text-align:center;margin-top:2rem;color:rgba(255,255,255,0.5)">&copy; 2026 {{site_name}}. All rights reserved.</p>
   </footer>
 
   <script src="/mobile-nav.js"></script>
