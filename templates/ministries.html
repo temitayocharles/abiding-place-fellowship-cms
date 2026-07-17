@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ministries - {{site_name}}</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-brand">{{site_name}}</a>
+      <ul class="navbar-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/ministries.html" class="active">Ministries</a></li>
+        <li><a href="/events.html">Events</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Our Ministries</h1>
+      <p>There's a place for everyone</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="section section-light">
+      <div class="container">
+        {{#if ministries.length}}
+        <div class="ministries-grid">
+          {{#each ministries}}
+          <div class="ministry-card">
+            {{#if this.icon}}
+            <div class="ministry-icon" style="font-size:2rem">{{this.icon}}</div>
+            {{/if}}
+            <h3>{{this.name}}</h3>
+            {{#if this.group}}<p><strong>For:</strong> {{this.group}}</p>{{/if}}
+            <p>{{this.description}}</p>
+          </div>
+          {{/each}}
+        </div>
+        {{else}}
+        <p>No ministries added yet. <a href="/admin.html">Add ministries via CMS</a></p>
+        {{/if}}
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 {{site_name}}. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/mobile-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - {{site_name}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body>
+  <!-- Navigation (same as home) -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-brand">{{site_name}}</a>
+      <ul class="navbar-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html" class="active">About</a></li>
+        <li><a href="/ministries.html">Ministries</a></li>
+        <li><a href="/events.html">Events</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero hero-small">
+    <div class="container">
+      <h1>Our Leadership Team</h1>
+      <p>Meet the pastors and leaders serving {{site_name}}</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="section section-light">
+      <div class="container">
+        <div class="team-grid">
+          {{#each members}}
+          <div class="team-card">
+            <div class="team-photo" style="background: linear-gradient(135deg, {{this.color}}, #6B7280); color: #fff;">
+              {{this.initials}}
+            </div>
+            <h3 class="team-name">{{this.name}}</h3>
+            <p class="team-role">{{this.role}}</p>
+            <div class="team-bio">
+              {{{this.bio}}}
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        
+        {{#if (lt team_count 1)}}
+        <p class="no-members">No team members added yet. <a href="/admin.html">Add team members via CMS</a></p>
+        {{/if}}
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 {{site_name}}. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/mobile-nav.js"></script>
+</body>
+</html>

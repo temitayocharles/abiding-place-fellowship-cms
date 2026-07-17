@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - {{site_name}}</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-brand">{{site_name}}</a>
+      <ul class="navbar-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/ministries.html">Ministries</a></li>
+        <li><a href="/events.html" class="active">Events</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Upcoming Events</h1>
+      <p>Join us for worship, Bible study, and community</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        {{#if events.length}}
+        <div class="events-grid">
+          {{#each events}}
+          <div class="event-card" style="border-left-color: {{this.color}}">
+            <span class="event-date">{{this.date}}</span>
+            <h3>{{this.title}}</h3>
+            <p>{{this.description}}</p>
+            <small>{{this.location}}</small>
+          </div>
+          {{/each}}
+        </div>
+        {{else}}
+        <p>No upcoming events at this time. <a href="/admin.html">Add events via CMS</a></p>
+        {{/if}}
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 {{site_name}}. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/mobile-nav.js"></script>
+</body>
+</html>

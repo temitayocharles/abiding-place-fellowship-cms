@@ -1,13 +1,3 @@
-[[redirects]]
-  from = "/admin/*"
-  to = "/admin/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 [build]
-  publish = "."
-  command = "echo 'Build complete'"
+command = "npm install && npm run build"
+publish = "public"

@@ -1,0 +1,15 @@
+{
+  "name": "abiding-place-fellowship-cms",
+  "version": "1.0.0",
+  "description": "Abiding Place Fellowship - CMS-driven static site",
+  "main": "scripts/build.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/build.js && npx http-server public -p 8080 --open"
+  },
+  "dependencies": {
+    "marked": "^9.1.0",
+    "yaml": "^2.3.4",
+    "http-server": "^14.1.1"
+  }
+}
