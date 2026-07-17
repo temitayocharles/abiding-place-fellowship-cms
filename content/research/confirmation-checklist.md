@@ -30,7 +30,7 @@ Complete this before connecting a final custom domain or announcing the site as 
 - Confirm ownership or permission for each image selected from the legacy website.
 - Obtain consent before reusing photographs of children, seniors, mission participants or third parties.
 - Select a current logo file and current photographs of the congregation and leadership.
-- Confirm whether any official Facebook, Instagram, YouTube, podcast or livestream account exists.
+- Confirm whether any official Facebook, Instagram, YouTube, podcast or livestream account exists. Do not use the unrelated San Diego ministry at abidingplace.org.
 
 ## Events and giving
 

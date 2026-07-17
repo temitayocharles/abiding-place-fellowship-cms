@@ -26,3 +26,8 @@
 ## Source-use rules
 
 The legacy site contains stale dates and conflicting study topics. Treat undated schedules and future-event blocks as historical until the church confirms them. Local-news photographs and text remain the publishers’ copyrighted works; link to them or obtain permission rather than copying them into the website.
+
+## Excluded same-name sources
+
+- `abidingplace.org` is an unrelated Abiding Place Ministries in San Diego, California. Do not import its sermons, livestreams, pastors, address, service times or social accounts into the Shelburne website.
+- The July 2026 search did not identify an authoritative current Facebook, Instagram, YouTube, podcast or livestream account for Abiding Place Fellowship in Shelburne. Leave social and media-channel links unpublished until the church confirms them.
