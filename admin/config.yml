@@ -1,9 +1,16 @@
 backend:
   name: git-gateway
   branch: main
+  commit_messages:
+    create: "Add {{title}}"
+    update: "Update {{title}}"
+    delete: "Delete {{title}}"
+    upload_media: "Upload media: {{path}}"
+    delete_media: "Delete media: {{path}}"
 
 media_folder: "assets/uploads"
 public_folder: "/uploads"
+media_folder_external_url: "https://abiding-place-ministries.netlify.app/uploads"
 
 collections:
   - name: "site"
