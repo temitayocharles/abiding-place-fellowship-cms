@@ -1,0 +1,11 @@
+phone: "519-925-3651"
+cell: "519-216-1804"
+email: "abidingplaceministries@sympatico.ca"
+address: "167 Centre St, Shelburne, ON L9V 3R8"
+service_times:
+  - day: "Sundays"
+    time: "10:00 AM"
+  - day: "Tuesdays"
+    time: "10:00 AM"
+  - day: "Wednesdays"
+    time: "7:00 PM"

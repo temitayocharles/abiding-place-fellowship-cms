@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Abiding Place Fellowship | Our Story & Leadership</title>
+  <meta name="description" content="Learn about Abiding Place Fellowship's history, mission, leadership team, and statement of faith. Meet the pastors and leaders serving Shelburne, Ontario.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800&family=Varela+Round&display=swap" rel="stylesheet">
+  <style>
+    :root { --color-primary: #2563EB; --color-primary-dark: #1D4ED8; --color-primary-light: #3B82F6; --color-secondary: #059669; --color-accent: #D97706; --color-background: #F8FAFC; --color-surface: #FFFFFF; --color-foreground: #0F172A; --color-foreground-muted: #475569; --color-muted: #F1F5FD; --color-border: #E4ECFC; --font-heading: 'Varela Round', sans-serif; --font-body: 'Nunito Sans', sans-serif; --space-sm: 1rem; --space-md: 1.5rem; --space-lg: 2rem; --space-xl: 3rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1); --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+    body { font-family: var(--font-body); line-height: 1.6; color: var(--color-foreground); background: var(--color-background); padding-top: 84px; }
+    h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+    h1 { font-size: 2.75rem; } h2 { font-size: 2.25rem; } h3 { font-size: 1.5rem; }
+    p { margin-bottom: var(--space-md); }
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; height: 84px; display: flex; align-items: center; background: var(--color-surface); border-bottom: 1px solid var(--color-border); backdrop-filter: blur(14px); box-shadow: var(--shadow-md); transition: all 0.3s; }
+    .navbar-container { max-width: 1200px; margin: 0 auto; padding: var(--space-md); display: flex; justify-content: space-between; align-items: center; }
+    .navbar-brand { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; }
+    .navbar-menu { display: flex; gap: var(--space-md); list-style: none; }
+    .navbar-menu a { padding: var(--space-sm); font-weight: 600; border-radius: var(--radius-lg); text-decoration: none; color: var(--color-foreground); transition: all 0.3s; }
+    .navbar-menu a.active { background: var(--color-muted); color: var(--color-primary); }
+    .hero { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%); color: #fff; padding: 4rem 2rem; text-align: center; }
+    .hero h1 { color: #fff; margin-bottom: var(--space-md); }
+    .section { padding: var(--space-xl) 2rem; }
+    .section-white { background: var(--color-surface); }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .team-grid { display: grid; gap: var(--space-lg); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: var(--space-xl); }
+    .team-card { background: var(--color-surface); border-radius: var(--radius-xl); padding: var(--space-lg); box-shadow: var(--shadow-md); border: 1px solid var(--color-border); text-align: center; }
+    .team-photo { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto var(--space-md); background: var(--color-muted); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--color-primary); }
+    .team-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .team-role { color: var(--color-primary); font-weight: 600; margin-bottom: var(--space-sm); }
+    .team-bio { color: var(--color-foreground-muted); font-size: 0.938rem; }
+    .faith-section { max-width: 800px; margin: 0 auto; }
+    .faith-articles { margin-top: var(--space-lg); }
+    .faith-article { background: var(--color-muted); padding: var(--space-md); border-radius: var(--radius-lg); margin-bottom: var(--space-md); }
+    .faith-article h4 { color: var(--color-primary); margin-bottom: var(--space-sm); }
+    .navbar-toggle { display: none; flex-direction: column; gap: 4px; padding: var(--space-sm); background: transparent; border: none; cursor: pointer; min-height: 44px; min-width: 44px; }
+    .navbar-toggle span { width: 24px; height: 2px; background: var(--color-foreground); }
+    .footer { background: var(--color-foreground); color: var(--color-muted); padding: 3rem 2rem; }
+    .footer-container { max-width: 1200px; margin: 0 auto; display: grid; gap: var(--space-lg); grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .footer h3 { color: #fff; margin-bottom: var(--space-sm); }
+    .footer a { color: var(--color-muted); text-decoration: none; }
+    .footer-bottom { text-align: center; margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    @media (max-width: 768px) {
+      .navbar-toggle { display: flex; }
+      .navbar-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--color-surface); flex-direction: column; padding: var(--space-md); box-shadow: var(--shadow-lg); }
+      .navbar-menu.active { display: flex; }
+      h1 { font-size: 2rem; } h2 { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="navbar-brand">Abiding Place <span style="color: var(--color-primary);">Fellowship</span></a>
+      <button class="navbar-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="navbar-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="ministries.html">Ministries</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Our Story & Leadership</h1>
+      <p style="font-size: 1.25rem; max-width: 700px; margin: 0 auto; opacity: 0.95;">Meet the team dedicated to serving Shelburne and sharing God's love</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="section section-white">
+      <div class="container">
+        <h2 style="text-align: center; margin-bottom: var(--space-xl);">Our Mission & Vision</h2>
+        <div class="faith-section">
+          <p>At Abiding Place Fellowship, we believe the church should be a welcoming community where everyone belongs, grows in their faith, and experiences Christ's transforming love. Our mission is to create a place where families can find home, where seekers can find truth, and where believers can find fellowship.</p>
+          <p>We are dedicated to Bible-centered teaching, warm community, and practical application of God's Word to everyday life. Whether you've been a Christian for decades or are just beginning to explore faith, you'll find a place to belong here.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 style="text-align: center; margin-bottom: var(--space-xl);">Our Leadership Team</h2>
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-photo" style="background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); color: #fff;">GH</div>
+            <h3 class="team-name">Rev. Gord Horsley</h3>
+            <p class="team-role">Senior Pastor</p>
+            <p class="team-bio">Gord has been serving the Shelburne community for over 15 years, bringing passionate, Bible-based teaching and a heart for Shepherding families. His messages are known for being both challenging and encouraging.</p>
+          </div>
+          <div class="team-card">
+            <div class="team-photo" style="background: linear-gradient(135deg, var(--color-secondary), #047857); color: #fff;">CM</div>
+            <h3 class="team-name">Dr. Carol McLean</h3>
+            <p class="team-role">Teaching Pastor</p>
+            <p class="team-bio">Carol brings deep theological insight and years of experience in biblical studies. Her teachings help believers understand Scripture's relevance for modern life with clarity and wisdom.</p>
+          </div>
+          <div class="team-card">
+            <div class="team-photo" style="background: linear-gradient(135deg, var(--color-accent), #B45309); color: #fff;">ED</div>
+            <h3 class="team-name">Emmanuel Dapaah</h3>
+            <p class="team-role">Worship Leader</p>
+            <p class="team-bio">Emmanuel leads our worship team with creativity and authenticity, creating space for genuine encounters with God through music, prayer, and community expression.</p>
+          </div>
+          <div class="team-card">
+            <div class="team-photo" style="background: linear-gradient(135deg, var(--color-primary), var(--primary-light)); color: #fff;">BH</div>
+            <h3 class="team-name">Bethany Horsley</h3>
+            <p class="team-role">Youth & Worship Coordinator</p>
+            <p class="team-bio">Bethany is passionate about connecting with young people and creating meaningful worship experiences that resonate with all ages. She oversees our youth programs and youth groups.</p>
+          </div>
+          <div class="team-card">
+            <div class="team-photo" style="background: linear-gradient(135deg, var(--color-primary), var(--primary-light)); color: #fff;">KH</div>
+            <h3 class="team-name">Kate Horsley</h3>
+            <p class="team-role">Children's Ministry</p>
+            <p class="team-bio">Kate leads our children's programs with creativity and care, ensuring the youngest members of our family grow up knowing God's love and truth through fun, age-appropriate teachings.</p>
+          </div>
+          <div class="team-card">
+            <div class="team-photo" style="background: linear-gradient(135deg, var(--color-accent), #D97706); color: #fff;">BS</div>
+            <h3 class="team-name">Bob Sibean</h3>
+            <p class="team-role">Worship & Community</p>
+            <p class="team-bio">Bob brings years of experience in worship leadership and community building. He's known for creating welcoming, Spirit-led worship experiences that bring people together.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white">
+      <div class="container">
+        <h2 style="text-align: center; margin-bottom: var(--space-xl);">Our Statement of Faith</h2>
+        <div class="faith-section">
+          <div class="faith-articles">
+            <div class="faith-article">
+              <h4>The Bible</h4>
+              <p>We believe the Bible is the inspired, inerrant Word of God, fully authoritative for all matters of faith and practice. Every word is God-breathed and profitable for teaching, rebuking, correcting, and training in righteousness.</p>
+            </div>
+            <div class="faith-article">
+              <h4>Jesus Christ</h4>
+              <p>We believe in the full deity and humanity of Jesus Christ, His virgin birth, sinless life, atoning death, bodily resurrection, ascension, and promised return. He is the only way to salvation and eternal life.</p>
+            </div>
+            <div class="faith-article">
+              <h4>The Holy Spirit</h4>
+              <p>We believe the Holy Spirit convicts the world of sin, righteousness, and judgment. He regenerates believers, indwells them, seals them for redemption, and empowers them for Christian living and service.</p>
+            </div>
+            <div class="faith-article">
+              <h4>The Church</h4>
+              <p>We believe the church consists of all believers in Jesus Christ, united as His body. We are called to worship, fellowship, discipleship, evangelism, and serving others in love and humility.</p>
+            </div>
+            <div class="faith-article">
+              <h4>Salvation</h4>
+              <p>We believe salvation is a free gift of God received through faith in Jesus Christ alone, not by works. All who believe are justified, adopted as children of God, and guaranteed eternal life.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); text-align: center; color: #fff;">
+      <div class="container">
+        <h2 style="color: #fff; margin-bottom: 1rem;">Want to Learn More?</h2>
+        <p style="font-size: 1.125rem; max-width: 700px; margin: 0 auto 2rem; opacity: 0.95;">Join us for one of our "New Here?" classes where we dive deeper into who we are, what we believe, and how you can become part of our family.</p>
+        <a href="contact.html" class="btn" style="background: #fff; color: #059669; padding: 1rem 2rem; font-weight: 700; border-radius: 8px; text-decoration: none; display: inline-block;">Contact Us</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div><h3>Abiding Place Fellowship</h3><p>A welcoming Christian community in Shelburne, Ontario</p></div>
+      <div><h3>Quick Links</h3><p><a href="index.html">Home</a></p><p><a href="about.html">About</a></p><p><a href="ministries.html">Ministries</a></p><p><a href="contact.html">Contact</a></p></div>
+      <div><h3>Contact</h3><p>Phone: <a href="tel:519-925-3651" style="color:var(--color-primary);text-decoration:none;">519-925-3651</a></p><p>Email: <a href="mailto:abidingplaceministries@sympatico.ca" style="color:var(--color-primary);text-decoration:none;">abidingplaceministries@sympatico.ca</a></p><p>Address: 167 Centre St, Shelburne</p></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 Abiding Place Fellowship. All rights reserved.</p></div>
+  </footer>
+
+  <script>
+    const toggle = document.querySelector('.navbar-toggle');
+    const menu = document.querySelector('.navbar-menu');
+    toggle?.addEventListener('click', () => {
+      menu.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

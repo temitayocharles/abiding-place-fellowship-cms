@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ministries - Abiding Place Fellowship | Programs for All Ages</title>
+<meta name="description" content="Explore our ministries at Abiding Place Fellowship: Kids programs, youth groups, Bible studies, women's & men's ministries, and more serving Shelburne, Ontario.">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800&family=Varela+Round&display=swap" rel="stylesheet">
+<style>
+:root { --primary:#2563EB; --secondary:#059669; --accent:#D97706; --bg:#F8FAFC; --surface:#fff; --text:#0F172A; --text-muted:#475569; --muted:#F1F5FD; --border:#E4ECFC; --font-heading:'Varela Round',sans-serif; --font-body:'Nunito Sans',sans-serif; --space-md:1.5rem; --space-lg:2rem; --radius-lg:0.75rem; --radius-xl:1rem; --shadow-md:0 4px 6px -1px rgba(0,0,0,0.1); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); line-height: 1.6; color: var(--text); background: var(--bg); }
+h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; margin-bottom: var(--space-md); }
+h1 { font-size: 2.75rem; } h2 { font-size: 2.25rem; } h3 { font-size: 1.5rem; }
+.hero { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color:#fff; padding:4rem 2rem; text-align:center; --primary-light:#3B82F6; }
+.hero h1 { color:#fff; }
+.section { padding: var(--space-lg) 2rem; }
+.section-white { background: var(--surface); }
+.container { max-width: 1200px; margin: 0 auto; }
+.ministries-grid { display: grid; gap: var(--space-lg); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: var(--space-lg); }
+.ministry-card { background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-lg); box-shadow: var(--shadow-md); border-left: 4px solid var(--primary); transition: transform 0.3s; }
+.ministry-card:hover { transform: translateY(-4px); }
+.ministry-icon { width: 56px; height: 56px; background: var(--muted); border-radius: var(--radius-lg); display:flex; align-items:center; justify-content:center; margin-bottom:1rem; font-size:2rem; }
+.navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; height: 84px; display: flex; align-items: center; background:var(--surface); border-bottom:1px solid var(--border); backdrop-filter: blur(14px); box-shadow:var(--shadow-md); }
+body { padding-top: 84px; }
+.navbar-container { max-width:1200px; margin:0 auto; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; }
+.navbar-brand { font-family:var(--font-heading); font-size:1.5rem; font-weight:700; }
+.navbar-menu { display:flex; gap:1rem; list-style:none; }
+.navbar-menu a { padding:0.5rem 1rem; font-weight:600; border-radius:var(--radius-lg); text-decoration:none; color:var(--text); }
+.navbar-menu a.active { background:var(--muted); color:var(--primary); }
+.footer { background:var(--text); color:var(--muted); padding:3rem 2rem; }
+.footer-container { max-width:1200px; margin:0 auto; display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
+@media(max-width:768px){ .navbar-menu{display:none;} .navbar-menu.active{display:flex;position:absolute;top:100%;left:0;right:0;background:var(--surface);flex-direction:column;padding:1rem;box-shadow:var(--shadow-md);} }
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="navbar-container"><a href="index.html" class="navbar-brand">Abiding Place Fellowship</a><ul class="navbar-menu"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="ministries.html" class="active">Ministries</a></li><li><a href="events.html">Events</a></li><li><a href="contact.html">Contact</a></li></ul></div></nav>
+<header class="hero"><div class="container"><h1>Ministries for Every Season of Life</h1><p style="font-size:1.25rem;opacity:0.95;max-width:700px;margin:0 auto">There's a place for everyone to grow, connect, and serve</p></div></header>
+<main>
+<section class="section section-white"><div class="container"><h2 style="text-align:center">Our Ministries</h2><div class="ministries-grid">
+<div class="ministry-card" style="border-left-color:var(--primary)"><div class="ministry-icon">👶</div><h3>Kids Ministry (Ages 3-12)</h3><p>Fun, safe, and Bible-centered programs for children. Our volunteers create age-appropriate lessons that help kids understand God's love and grow in their faith. Available during Sunday services.</p></div>
+<div class="ministry-card" style="border-left-color:var(--secondary)"><div class="ministry-icon">👦</div><h3>Youth Ministry (Grades 6-12)</h3><p>A dynamic environment where teens can ask questions, build authentic friendships, and discover their identity in Christ. Weekly gatherings, retreats, and service projects.</p></div>
+<div class="ministry-card" style="border-left-color:var(--accent)"><div class="ministry-icon">👩</div><h3>Women's Ministry</h3><p>Community, discipleship, and empowerment for women of all ages. Monthly gatherings, Bible studies, and service opportunities designed to encourage and uplift.</p></div>
+<div class="ministry-card"><div class="ministry-icon">👨</div><h3>Men's Ministry</h3><p>Building brothers in Christ through fellowship, accountability, and spiritual growth. Monthly breakfasts, Bible studies, and outreach initiatives.</p></div>
+<div class="ministry-card"><div class="ministry-icon">📖</div><h3>Bible Study Groups</h3><p>Small groups meet throughout the week for deeper study and fellowship. Currently studying Acts (Tue 10 AM) and Romans (Wed 7 PM) at Mel Lloyd Centre.</p></div>
+<div class="ministry-card"><div class="ministry-icon">🤝</div><h3>Outreach & Missions</h3><p>Serving our community and beyond through local partnerships, mission trips, and charitable initiatives. Get involved in making a difference.</p></div>
+</div></div></section>
+<section class="section" style="background:linear-gradient(135deg,#059669,#047857);text-align:center;color:#fff"><div class="container"><h2 style="color:#fff">Ready to Get Involved?</h2><p style="font-size:1.125rem;max-width:700px;margin:0 auto 2rem;opacity:0.95">Whether you want to serve, join a small group, or just connect with others, there's a place for you.</p><a href="contact.html" style="background:#fff;color:#059669;padding:1rem 2rem;border-radius:8px;font-weight:700;text-decoration:none;display:inline-block">Join a Ministry</a></div></section>
+</main>
+<footer class="footer"><div class="footer-container"><div><h3>Abiding Place Fellowship</h3><p>Welcoming Christian community in Shelburne</p></div><div><h3>Quick Links</h3><p><a href="index.html" style="color:var(--muted)">Home</a></p><p><a href="about.html" style="color:var(--muted)">About</a></p><p><a href="ministries.html" style="color:var(--muted)">Ministries</a></p></div><div><h3>Contact</h3><p>Phone: <a href="tel:519-925-3651" style="color:var(--muted);">519-925-3651</a></p><p>Email: <a href="mailto:abidingplaceministries@sympatico.ca" style="color:var(--muted);">abidingplaceministries@sympatico.ca</a></p></div></div><div style="text-align:center;margin-top:2rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5)">&copy; 2026 Abiding Place Fellowship</div></footer>
+</body>
+</html>
