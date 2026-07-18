@@ -3,66 +3,82 @@ const path = require('path');
 const yaml = require('yaml');
 const { marked } = require('marked');
 
-// Helper to replace Handlebars-style templates
+// Custom Handlebars-like template engine
 function renderTemplate(template, data) {
-  // Replace simple {{key}} variables
-  Object.keys(data).forEach(key => {
-    const value = data[key];
-    const placeholder = `{{${key}}}`;
-    
-    if (typeof value === 'string') {
-      template = template.split(placeholder).join(value || '');
-    } else if (Array.isArray(value)) {
-      // Will be handled by #each blocks
-    } else {
-      template = template.split(placeholder).join(JSON.stringify(value));
-    }
-  });
+  let output = template;
 
-  // Handle {{#each}} blocks
-  template = template.replace(/\{\{#each (\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, collectionName, innerTemplate) => {
+  // Step 1: Process {{#each collection}} blocks
+  output = output.replace(/\{\{#each ([\w]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, collectionName, innerTemplate) => {
     const items = data[collectionName] || [];
     if (!items.length) return '';
     
-    return items.map((item, index) => {
-      let rendered = innerTemplate;
-      // Inject item-specific variables
-      Object.keys(item).forEach(key => {
-        rendered = rendered.split(`{{${key}}}`).join(item[key] || '');
-      });
-      // Inject parent-level variables
-      Object.keys(data).forEach(key => {
-        rendered = rendered.split(`{{${key}}}`).join(data[key] || '');
-      });
-      // Handle nested {{#if}} blocks
-      rendered = rendered.replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (m, cond, content) => {
-        return item[cond] ? content : '';
-      });
-      // Handle {{substring}} helper
-      rendered = rendered.replace(/\{\{substring "(\w+)" (\d) (\d)\}\}/g, (m, str, start, len) => {
-        return str.substring(start, start + parseInt(len));
-      });
-      // Handle {{substring item key}} syntax
-      rendered = rendered.replace(/\{\{substring ([^\s]+) ([^\s]+) ([^\s]+)\}\}/g, (m, obj, prop, len) => {
-        const value = item[prop] || '';
-        return value.substring(0, parseInt(len));
-      });
-      return rendered;
+    return items.map(item => {
+      // Create a merged context (item + parent data)
+      const context = { ...data, ...item, parent: data };
+      
+      // Recursively process nested structures in this item's context
+      return processTemplate(innerTemplate, context);
     }).join('');
   });
 
-  // Handle {{#if}} blocks
-  template = template.replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{{\/if\}\}/g, (match, condition, content) => {
-    const value = data[condition];
-    return (value && value.length > 0) ? content : '';
+  // Step 2: Process {{#if condition}} blocks
+  output = output.replace(/\{\{#if ([\w.]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
+    const value = getNestedValue(data, condition);
+    if (Array.isArray(value)) {
+      return value.length > 0 ? processTemplate(content, data) : '';
+    }
+    return value ? processTemplate(content, data) : '';
   });
 
-  // Process markdown in text fields
-  template = template.replace(/\{\{!markdown (.*?)\}\}/g, (match, mdContent) => {
-    return marked.parse(mdContent);
+  // Step 3: Replace simple {{variable}} placeholders
+  Object.keys(data).forEach(key => {
+    const value = data[key];
+    if (Array.isArray(value) || typeof value === 'object') return; // Skip in simple replacement
+    const placeholder = `{{${key}}}`;
+    output = output.split(placeholder).join(String(value || ''));
   });
 
-  return template;
+  // Step 4: Process markdown
+  output = output.replace(/\{\{!markdown ([\s\S]*?)\}\}/g, (match, md) => marked.parse(md));
+
+  return output;
+}
+
+// Helper to get nested values (e.g., "service_times.0.day")
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((current, key) => current && current[key], obj);
+}
+
+// Recursive template processor
+function processTemplate(template, data) {
+  let output = template;
+
+  // Replace {{this.variable}} with item's variable
+  output = output.replace(/\{\{this\.([\w]+)\}\}/g, (match, key) => {
+    return data[key] || '';
+  });
+
+  // Replace plain {{variable}} with item's variable if exists, else parent
+  output = output.replace(/\{\{([\w.]+)\}\}/g, (match, path) => {
+    const value = getNestedValue(data, path);
+    return Array.isArray(value) ? JSON.stringify(value) : (value || '');
+  });
+
+  // Handle {{#if this.variable}}
+  output = output.replace(/\{\{#if this\.([\w]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, key, content) => {
+    return data[key] ? processTemplate(content, data) : '';
+  });
+
+  // Handle {{#if variable}}
+  output = output.replace(/\{\{#if ([\w.]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, key, content) => {
+    const value = getNestedValue(data, key);
+    if (Array.isArray(value)) {
+      return value.length > 0 ? processTemplate(content, data) : '';
+    }
+    return value ? processTemplate(content, data) : '';
+  });
+
+  return output;
 }
 
 // Project directories
@@ -91,29 +107,26 @@ function buildPage(templateName, data) {
 async function build() {
   console.log('🏗️  Building pages from CMS content...\n');
   
-  // Ensure public directory exists
   fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 
-  // Load shared data
   const siteConfig = loadYaml(path.join(CONFIG_DIR, 'site.yaml')) || {};
   const contactConfig = loadYaml(path.join(CONFIG_DIR, 'contact.yaml')) || {};
   
   const siteName = siteConfig.name || 'Abiding Place Fellowship';
   const description = siteConfig.description || 'A Christian fellowship in Shelburne, Ontario';
-  const { phone, address, email, service_times = [] } = contactConfig;
+  const { phone, address, email, service_times = [], venue, entrance, cell } = contactConfig;
 
-  // Build Team/About page
   const teamMembers = loadCollection(path.join(CONTENT_DIR, 'team'));
   const aboutHtml = buildPage('about.html', {
     site_name: siteName,
     members: teamMembers,
     phone,
-    email
+    email,
+    address
   });
   fs.writeFileSync(path.join(PUBLIC_DIR, 'about.html'), aboutHtml);
   console.log(`✅ about.html (${teamMembers.length} team members)`);
 
-  // Build Events page
   const events = loadCollection(path.join(CONTENT_DIR, 'events'));
   const eventsHtml = buildPage('events.html', {
     site_name: siteName,
@@ -122,7 +135,6 @@ async function build() {
   fs.writeFileSync(path.join(PUBLIC_DIR, 'events.html'), eventsHtml);
   console.log(`✅ events.html (${events.length} events)`);
 
-  // Build Ministries page
   const ministries = loadCollection(path.join(CONTENT_DIR, 'ministries'));
   const ministriesHtml = buildPage('ministries.html', {
     site_name: siteName,
@@ -131,21 +143,19 @@ async function build() {
   fs.writeFileSync(path.join(PUBLIC_DIR, 'ministries.html'), ministriesHtml);
   console.log(`✅ ministries.html (${ministries.length} ministries)`);
 
-  // Build Contact page
   const contactHtml = buildPage('contact.html', {
     site_name: siteName,
     phone,
-    cell: contactConfig.cell || '',
+    cell: cell || '',
     email,
     address,
-    venue: contactConfig.venue || '',
-    entrance: contactConfig.entrance || '',
+    venue: venue || '',
+    entrance: entrance || '',
     service_times
   });
   fs.writeFileSync(path.join(PUBLIC_DIR, 'contact.html'), contactHtml);
   console.log('✅ contact.html');
 
-  // Build Home page
   const homeEvents = events.filter(e => e.show_on_home !== false).slice(0, 3);
   const homeHtml = buildPage('index.html', {
     site_name: siteName,
@@ -159,7 +169,6 @@ async function build() {
   fs.writeFileSync(path.join(PUBLIC_DIR, 'index.html'), homeHtml);
   console.log('✅ index.html');
 
-  // Copy static assets
   const staticFiles = ['admin.html', 'css/theme.css', 'mobile-nav.js', 'design-system.json'];
   staticFiles.forEach(file => {
     const src = path.join(ROOT, file);
@@ -171,7 +180,6 @@ async function build() {
     }
   });
 
-  // Copy assets folder
   const assetsSrc = path.join(ROOT, 'assets');
   if (fs.existsSync(assetsSrc)) {
     const assetsDest = path.join(PUBLIC_DIR, 'assets');
