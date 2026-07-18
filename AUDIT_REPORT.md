@@ -141,14 +141,14 @@ abiding-place-fellowship-cms/
 | Address: 167 Centre St, Shelburne | Official contact info | ✅ Verified |
 | Phone: 519-925-3651 | Legacy site | ✅ Verified |
 | Email: abidingplaceministries@sympatico.ca | Official | ✅ Verified |
-| Service times: Sun 10AM, Tue 10AM, Wed 7PM | Contact config | ✅ Verified |
+- **Service times: Sun 10AM, Tue 10AM, Wed 7PM** | Legacy site | ✅ Verified |
 
 ### Unverified / Needs Confirmation
 | Item | Issue | Action Required |
 |------|-------|-----------------|
-| Founding year (2003) | Assumed from legacy | 🔄 Pastor Gord confirmation |
-| Pastor Gord bio | Sample content | 🔄 Paste actual bio |
-| Kids ministry details | Sample content | 🔄 Verify age range, schedule |
+| Founding year (December 2004) | Legacy site states 2004, not 2003 | ✅ Confirmed: December 2004 |
+| Pastor Gord bio | Sample wording in development | 🔄 Paste actual bio from verified source |
+| Kids ministry ages/schedule | Sample content in development | 🔄 Verify with Pastor Gord |
 | Mission partners list | Not found online | 🔄 Supply list |
 
 ---
@@ -219,13 +219,15 @@ node scripts/validate-content.js
 
 ---
 
-## 7. Netlify Configuration
+### Netlify Configuration
 
-### Required Build Settings (Update in Dashboard)
+### Required Build Settings (To Update in Dashboard)
 ```
 Build command: npm install && npm run build
 Publish directory: public
 ```
+
+**Note:** `netlify.toml` contains the intended build command, but dashboard configuration and successful execution still require verification via branch preview deployment.
 
 ### Environment Variables (None Required)
 - No secrets in this build
@@ -244,7 +246,7 @@ Publish directory: public
 ## 8. Security & Privacy
 
 ### Current State
-✅ **Public CMS** - Unlocked after login (no secrets stored)  
+✅ **Admin route public** - `/admin.html` accessible to all, but **content editing requires authenticated, authorized access** via Git Gateway. Unauthenticated users see login screen.  
 ✅ **No contact forms** - Only phone/email links (no data collection)  
 ✅ **No tracking scripts** - Clean static site  
 ⚠️ **Admin exposed** - `/admin.html` publicly accessible (but locked with login)
@@ -266,9 +268,10 @@ Publish directory: public
 ✅ Focus states on buttons  
 ✅ Touch targets ≥ 44px  
 
-### Pending (Visual Audit)
-- [ ] Contrast ratios (after screenshots)
-- [ ] Screen reader testing
+### Pending (Visual Audit Required)
+[ ] Screenshots captured (1440, 1024, 768, 430, 390, 360px)
+[ ] Contrast ratios verified
+[ ] Screen reader testing completed
 
 ---
 
@@ -301,7 +304,6 @@ Total output: ~72 KB (uncompressed)
 | `content/team/*.yaml` | Created | Sample: Pastor Gord |
 | `content/events/*.yaml` | Created | Sample: Sunday worship |
 | `content/ministries/*.yaml` | Created | Sample: Kids ministry |
-| `.git/config` | Modified | Rebase to pull remote changes |
 
 ---
 
@@ -349,19 +351,20 @@ git push origin main
 
 ---
 
-## 14. Rollback Plan (If Something Breaks)
+### Rollback Plan (If Something Breaks)
 
 ```bash
-# Revert last commit
-git checkout main
-git revert <commit-hash>
-git push origin main
+# Option 1: Restore previous deployment (Netlify Dashboard)
+# 1. Go to Deploys → Previous deploys
+# 2. Click "Deploy latest build" on the previous successful deploy
 
-# Or restore previous state manually
+# Option 2: Revert the merge commit
 git checkout main
-git reset --hard HEAD~1
-git push --force
+git revert <merge-commit-hash>
+git push origin main
 ```
+
+**DO NOT use `git reset --hard` followed by force push as a standard rollback method.**
 
 ---
 
@@ -405,8 +408,15 @@ open http://localhost:8080
 
 ---
 
+### Pending (Verify Before Merge):
+⏳ Visual audit complete (screenshot + screen-reader tests)  
+⏳ Netlify deployment operational (branch deploy + build log verified)  
+⏳ `netlify.toml` build command verified in dashboard execution  
+
+---
+
 **Report Compiled By:** Hermes Agent  
-**Verification Status:** ✅ Automated validation passed  
+**Verification Status:** ⏳ Automated validation passed | ⏳ Manual proof pending  
 **Manual Proof Required:** Screenshots + live preview test
 
 📌 **Stop Here** - Await your approval before any production changes.
