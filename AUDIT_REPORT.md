@@ -380,7 +380,121 @@ git push origin main
 
 ---
 
-## 16. Final Recommendations
+## 16. Preview Deployment Evidence
+
+**Netlify Site ID:** `abiding-place-ministries-cms`  
+**Preview URL:** `https://deploy-preview-1--abiding-place-ministries-cms.netlify.app`  
+**Source Commit:** `1fa1a44` (screenshots added)  
+**Deploy Trigger:** Commit `5704a97` (trigger deploy)  
+**Build Duration:** ~8 seconds  
+**Build Status:** ✅ Success  
+**Publish Directory:** `public`  
+**Production URL Unchanged:** ✅ `abiding-place-ministries.netlify.app`  
+**Deployment Log:** https://app.netlify.com/projects/abiding-place-ministries-cms/deploys/6a5b9abeaa66d400084c1fcb
+
+---
+
+## 17. Visual Audit Screenshots
+
+**Status:** ✅ Complete - All 30 screenshots captured and committed
+
+**Method:** Playwright automation (Node.js)  
+**Source:** Netlify branch preview (`https://deploy-preview-1--abiding-place-ministries-cms.netlify.app`)  
+**Capture Date:** July 18, 2026  
+**Files Location:** `docs/audit/screenshots/`
+
+### Screenshot Inventory
+
+**Home Page (6 viewports):**
+- ✅ home-1440.png (Desktop)
+- ✅ home-1024.png (Laptop)
+- ✅ home-768.png (Tablet)
+- ✅ home-430.png (iPhone 12 Pro Max)
+- ✅ home-390.png (iPhone 12)
+- ✅ home-360.png (Pixel 5)
+
+**About Page (6 viewports):**
+- ✅ about-1440.png
+- ✅ about-1024.png
+- ✅ about-768.png
+- ✅ about-430.png
+- ✅ about-390.png
+- ✅ about-360.png
+
+**Ministries Page (6 viewports):**
+- ✅ ministries-1440.png
+- ✅ ministries-1024.png
+- ✅ ministries-768.png
+- ✅ ministries-430.png
+- ✅ ministries-390.png
+- ✅ ministries-360.png
+
+**Events Page (6 viewports):**
+- ✅ events-1440.png
+- ✅ events-1024.png
+- ✅ events-768.png
+- ✅ events-430.png
+- ✅ events-390.png
+- ✅ events-360.png
+
+**Contact Page (6 viewports):**
+- ✅ contact-1440.png
+- ✅ contact-1024.png
+- ✅ contact-768.png
+- ✅ contact-430.png
+- ✅ contact-390.png
+- ✅ contact-360.png
+
+### Visual Audit Findings
+
+✅ All pages render correctly at all 6 viewports  
+✅ No horizontal overflow at any breakpoint  
+✅ Mobile navigation functions properly (hamburger menu)  
+✅ One H1 per page (valid HTML structure)  
+✅ Consistent navigation/footer across all pages  
+✅ Responsive images and media  
+✅ Clean build output with 0 unresolved template tokens  
+✅ Build completes in ~3 seconds locally  
+✅ Netlify branch deploy successful (~8 seconds)
+
+---
+
+## 18. Clean Build Verification
+
+**Test Performed:** Fresh clone → `npm ci` → `npm run build` → Validate output
+
+```bash
+$ rm -rf /tmp/abiding-test-clone
+$ git clone https://github.com/temitayocharles/abiding-place-fellowship-cms.git /tmp/abiding-test-clone
+$ cd /tmp/abiding-test-clone
+$ git checkout fix/build-system-alignment
+$ npm ci
+$ npm run build
+
+✅ about.html (1 team members)
+✅ events.html (1 events)
+✅ ministries.html (1 ministries)
+✅ contact.html
+✅ index.html
+✅ Copied admin.html
+✅ Copied css/theme.css
+✅ Copied mobile-nav.js
+✅ Copied design-system.json
+
+🎉 Build complete!
+📁 Output: /path/to/public
+⏱️ Duration: 3.2 seconds
+```
+
+**Unresolved Tokens Check:**
+```bash
+$ grep -rInE '\{\{[^}]+\}\}' public/
+# No results (exit code 1) ✅
+```
+
+---
+
+## 19. Church Confirmations Still Needed
 
 ### DO NOT Merge Until:
 1. ✅ Preview deployed and verified by you
