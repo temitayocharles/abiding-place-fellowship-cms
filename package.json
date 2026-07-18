@@ -4,9 +4,12 @@
   "description": "Abiding Place Fellowship - CMS-driven static site",
   "main": "scripts/build.js",
   "scripts": {
-    "build": "node scripts/build.js",
-    "dev": "node scripts/build.js && npx http-server public -p 8080 --open"
-  },
+      "build": "node scripts/build.js",
+      "dev": "npx http-server public -p 8080",
+      "validate": "node scripts/validate-content.js",
+      "capture-screenshots": "node scripts/capture-screenshots.js",
+      "test": "npm run validate && npm run build"
+    },
   "dependencies": {
     "marked": "^9.1.0",
     "yaml": "^2.3.4",
