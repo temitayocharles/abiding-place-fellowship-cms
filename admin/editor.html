@@ -1,19 +1,299 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CMS Editor - Abiding Place Fellowship</title>
+  <title>Content Editor · Abiding Place Fellowship</title>
+  <meta name="description" content="Abiding Place Fellowship — content management editor" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%232563EB' d='M11.5 2L2 7v13h20V7L12.5 2h-1zM20 18H4V8l8.5 4.5L20 8v10z'/%3E%3C/svg%3E" />
+
+  <!-- Google Fonts: Space Grotesk (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
   <style>
-    body { margin: 0; }
+    /* ============================================================
+       Abiding Place Fellowship · Decap CMS brand overrides
+       ------------------------------------------------------------
+       Decap's default admin uses a green/teal palette (#3d694b,
+       #6ab75c, #2980b9, #16a085). We re-theme it with the site's
+       navy blue (#2563EB), DM Sans body + Space Grotesk display,
+       and add a logo/title to the app header so it feels welcoming.
+       ============================================================ */
+
+    :root {
+      /* Brand palette (mirrors site :root values) */
+      --ap-primary:        #2563EB;   /* navy blue primary       */
+      --ap-primary-dark:   #1E40AF;
+      --ap-primary-light:  #60A5FA;
+      --ap-primary-tinted: #F1F5FD;   /* background tint on navy */
+      --ap-border:         #E4ECFC;
+      --ap-text:           #0F172A;
+      --ap-text-muted:     #475569;
+      --ap-surface:        #FFFFFF;
+      --ap-bg:             #F8FAFC;
+
+      /* Font stacks */
+      --ap-font-display: "Space Grotesk", "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --ap-font-body:    "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: var(--ap-font-body);
+      color: var(--ap-text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: var(--ap-bg);
+    }
     #root { min-height: 100vh; }
+
+    /* ---- Re-theme Decap's internal CSS variables ---------------------
+       Decap exposes these on its own components (prefixed `.nc-`).
+       Overriding the known hex values re-colors buttons, the active
+       nav item, focused inputs, and the accent ring.
+       ------------------------------------------------------------ */
+    .nc-netlify-cms-root,
+    .nc-app-root,
+    .cms-root {
+      /* primary accent targets */
+      --primaryColor:        var(--ap-primary) !important;
+      --primaryColorDark:    var(--ap-primary-dark) !important;
+      --primaryColorLight:   var(--ap-primary-light) !important;
+      --primaryColorAlpha:   rgba(37, 99, 235, 0.15) !important;
+      --primaryColorAlphaLight: rgba(37, 99, 235, 0.08) !important;
+      --colorAccent:         var(--ap-primary) !important;
+      --colorAccentDark:     var(--ap-primary-dark) !important;
+      --colorAccentLight:    var(--ap-primary-light) !important;
+
+      /* font targets */
+      --fontBody: var(--ap-font-body) !important;
+      --fontHeadings: var(--ap-font-display) !important;
+    }
+
+    /* ---- Legacy green/teal hex overrides (belt + braces) ------------
+       Some Decap builds hard-code `#3d694b`, `#6ab75c`, `#2980b9`,
+       and `#16a085`. Decap defines CSS custom properties on
+       `:root`, so overriding the token names catches the older
+       palette even when variable targets above don't match.
+       ------------------------------------------------------------ */
+    :root {
+      --colorPrimary:        #2563EB !important;
+      --colorPrimaryDark:    #1E40AF !important;
+      --colorPrimaryLight:   #60A5FA !important;
+      --colorSuccess:        #2563EB !important;
+      --colorSuccessDark:    #1E40AF !important;
+      --colorSuccessLight:   #60A5FA !important;
+      --colorTeal:           #2563EB !important;
+      --colorTealDark:       #1E40AF !important;
+      --colorTealLight:      #60A5FA !important;
+      --colorGreen:          #2563EB !important;
+      --colorGreenDark:      #1E40AF !important;
+      --colorGreenLight:     #60A5FA !important;
+    }
+
+    /* ---- Branded app header ---------------------------------------- */
+    /* The renderer runs inside #root, so the injection is deferred
+       slightly so Decap's own header layout exists before we patch it. */
+
+    .ap-cms-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0 0.75rem 0 0.25rem;
+      font-family: var(--ap-font-display);
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      user-select: none;
+    }
+    .ap-cms-brand .ap-cms-brand__mark {
+      width: 28px;
+      height: 28px;
+      fill: #ffffff;
+      flex: none;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18));
+    }
+    .ap-cms-brand .ap-cms-brand__name {
+      font-size: 1rem;
+      line-height: 1.1;
+    }
+    .ap-cms-brand .ap-cms-brand__tag {
+      display: block;
+      font-family: var(--ap-font-body);
+      font-weight: 500;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    /* Top bar — Decap's app header element */
+    .cms-app-root [class*="AppHeader"],
+    .cms-app-root .cms-app-header,
+    .cms-app-root header[class*="nc(AppHeader-"],
+    .cms-manage-page .cms-app-header,
+    .cms-manage-page header[class*="AppHeader"] {
+      background: linear-gradient(180deg, var(--ap-primary) 0%, var(--ap-primary-dark) 100%) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 2px 10px rgba(30, 64, 175, 0.18) !important;
+    }
+
+    /* Buttons, links, and the active sidebar item default to navy */
+    .cms-manage-page button[class*="Button"]:not([class*="Button--Ghost"]):hover {
+      background: var(--ap-primary-dark) !important;
+    }
+
+    /* Persisting logo: the injected element survives route changes
+       because we re-inject on each mutation. See the script below. */
+
+    /* ---- Welcome/loading screen ------------------------------------ */
+    /* Decap shows an empty #root while the bundle mounts; render a
+       branded placeholder so the page never flashes the default
+       white screen. */
+    .ap-loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, var(--ap-primary) 0%, var(--ap-primary-dark) 100%);
+      color: #fff;
+      font-family: var(--ap-font-body);
+      z-index: 10;
+    }
+    .ap-loading .ap-loading__mark { width: 56px; height: 56px; fill: #fff; opacity: 0.95; }
+    .ap-loading .ap-loading__title {
+      margin-top: 1rem;
+      font-family: var(--ap-font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .spinning-dots {
+      margin-top: 1.75rem;
+      width: 32px;
+      display: flex;
+      gap: 6px;
+    }
+    .spinning-dots span {
+      width: 8px; height: 8px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      animation: ap-pulse 1.2s ease-in-out infinite;
+    }
+    .spinning-dots span:nth-child(2) { animation-delay: 0.18s; }
+    .spinning-dots span:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes ap-pulse {
+      0%, 80%, 100% { transform: scale(0.5); opacity: 0.4; }
+      40% { transform: scale(1);    opacity: 1; }
+    }
+
+    /* ---- Reduced motion, WCAG-friendly focus rings ----------------- */
+    @media (prefers-reduced-motion: reduce) {
+      .spinning-dots span { animation: none; opacity: 0.85; }
+      * { transition-duration: 0.001ms !important; }
+    }
+    *:focus-visible {
+      outline: 3px solid var(--ap-primary-light) !important;
+      outline-offset: 1px !important;
+    }
   </style>
 </head>
 <body>
+  <!-- Branded loading placeholder, shown until Decap mounts -->
+  <div class="ap-loading" id="ap-loading" aria-hidden="false">
+    <svg class="ap-loading__mark" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M11.5 2L2 7v13h20V7L12.5 2h-1zM20 18H4V8l8.5 4.5L20 8v10z"></path>
+    </svg>
+    <div class="ap-loading__title">Abiding Place Fellowship</div>
+    <div class="spinning-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- Decap CMS mount point -->
   <div id="root"></div>
+
   <script>
-    // CMS is configured in admin/config.yml
+    // The admin should also work when served at /admin/ — Decap
+    // reads its config from `config.yml` relative to this file.
+    // Remove the branded loader once Decap has painted its UI.
+    (function () {
+      function removeLoader() {
+        var el = document.getElementById("ap-loading");
+        if (el) {
+          el.style.transition = "opacity 220ms ease";
+          el.style.opacity = "0";
+          window.setTimeout(function () {
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+          }, 260);
+        }
+      }
+      // Decap mounts asynchronously; poll for its root wrapper.
+      var tries = 0;
+      function tick() {
+        var mounted =
+          document.querySelector(".cms-app-root") ||
+          document.querySelector(".cms-manage-page") ||
+          document.querySelector(".nc-app-root");
+        if (mounted || tries++ > 60) {
+          removeLoader();
+        } else {
+          window.setTimeout(tick, 100);
+        }
+      }
+      window.setTimeout(tick, 250);
+      // Safety net: always remove the loader after 8s.
+      window.setTimeout(removeLoader, 8000);
+
+      // Inject the church logo + title into Decap's app header so
+      // it survives client-side route switches inside the CMS.
+      var BRAND_HTML =
+        '<a class="ap-cms-brand" href="../index.html" title="View site" target="_blank" rel="noopener">' +
+          '<svg class="ap-cms-brand__mark" viewBox="0 0 24 24" aria-hidden="true">' +
+            '<path d="M11.5 2L2 7v13h20V7L12.5 2h-1zM20 18H4V8l8.5 4.5L20 8v10z"></path>' +
+          '</svg>' +
+          '<span class="ap-cms-brand__name">' +
+            'Abiding Place Fellowship' +
+            '<span class="ap-cms-brand__tag">Content Editor</span>' +
+          '</span>' +
+        '</a>';
+
+      function isInjected(header) {
+        return header && header.querySelector(".ap-cms-brand");
+      }
+
+      function injectBrand() {
+        var header =
+          document.querySelector(".cms-app-root [class*=\"AppHeader\"]") ||
+          document.querySelector(".cms-app-root .cms-app-header") ||
+          document.querySelector(".cms-manage-page header") ||
+          document.querySelector("header[class*=\"AppHeader\"]");
+        if (!header || isInjected(header)) return;
+        var host =
+          header.querySelector("[class*=\"AppHeader-left\"]") ||
+          header.querySelector(":scope > div:first-child") ||
+          header;
+        host.insertAdjacentHTML("afterbegin", BRAND_HTML);
+      }
+
+      // Run injection once and re-run on DOM mutations so the brand
+      // survives Decap's SPA re-renders.
+      var observer = new MutationObserver(function () { injectBrand(); });
+      observer.observe(document.getElementById("root"), {
+        childList: true,
+        subtree: true
+      });
+      window.setTimeout(injectBrand, 800);
+      window.setInterval(injectBrand, 5000);
+    })();
   </script>
 </body>
 </html>

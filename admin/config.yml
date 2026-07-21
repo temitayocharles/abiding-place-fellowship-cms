@@ -1,256 +1,113 @@
-# Professional Decap CMS Configuration for Abiding Place Fellowship
-# Enhanced User Experience with Improved Labels, Organization, and Guidance
+# Decap CMS Configuration — Abiding Place Fellowship
+# Simplified for pastors and non-technical users 💚
 
 backend:
   name: git-gateway
   branch: main
-  commit_messages:
-    create: "✨ Add {{collection}}: \"{{slug}}\""
-    update: "📝 Update {{collection}}: \"{{slug}}\""
-    delete: "🗑️ Delete {{collection}}: \"{{slug}}\""
-    upload_media: "📤 Upload media: {{path}}"
-    delete_media: "🗑️ Delete media: {{path}}"
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
-# Using Uploadcare for media management - replace demo key with production key
-media_library:
-  name: "uploadcare"
-  config:
-    publicKey: "demopublickey"
 
-site_url: "https://abiding-place-ministries.netlify.app"
-logo_url: "/assets/images/logo.svg"
-display_url: "https://abiding-place-ministries.netlify.app"
+site_url: "https://abiding-place-ministries-cms.netlify.app"
+display_url: "https://abiding-place-ministries-cms.netlify.app"
 
-# Content preview templates for better editing experience
-preview_template:
-  - name: "Home Page"
-    url: "{{site_url}}"
-    match: "{{collection}} == \"site_settings\""
-  - name: "Team Member"
-    url: "{{site_url}}/team/{{slug}}"
-    match: "{{collection}} == \"team\""
-  - name: "Event"
-    url: "{{site_url}}/events/{{slug}}"
-    match: "{{collection}} == \"events\""
-  - name: "Ministry"
-    url: "{{site_url}}/ministries/{{slug}}"
-    match: "{{collection}} == \"ministries\""
+publish_mode: editorial_workflow
+
+commit_messages:
+  create: "✨ Create {{collection}} — {{slug}}"
+  update: "📝 Update {{collection}} — {{slug}}"
+  delete: "🗑️ Delete {{collection}} — {{slug}}"
+  uploadMedia: "📸 Upload media — {{path}}"
+  deleteMedia: "🗑️ Delete media — {{path}}"
 
 collections:
-  - name: "site_settings"
-    label: "⚙️ Site Configuration"
-    label_singular: "Setting"
-    description: "Global settings that affect the entire website appearance and functionality"
-    files:
-      - name: "site"
-        label: "🏢 Organization Information"
-        label_singular: "Site Record"
-        description: "Core identifying information about the fellowship"
-        file: "config/site.yaml"
-        fields:
-          - {label: "Official Organization Name", name: "name", widget: "string", required: true, placeholder: "Abiding Place Fellowship Ministries"}
-          - {label: "Tagline or Mission Statement", name: "tagline", widget: "string", required: false, placeholder: "Where Faith Meets Community"}
-          - {label: "Organization Description", name: "description", widget: "text", required: true}
-          - {label: "Year Founded", name: "founded", widget: "number", value_type: "int", min: 1900, max: 2030, step: 1}
-          - {label: "Primary Website URL", name: "website", widget: "string", required: false, pattern: "^https?://.+"}
-          - {label: "General Contact Email", name: "email", widget: "string", required: true, pattern: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"}
-          - {label: "Main Phone Number", name: "phone", widget: "string", required: false, pattern: "^[\\d\\s\\-\\(\\)\\+]+$"}
-          - {label: "Physical Location Details", name: "address", widget: "object", fields: [
-              {label: "Street Address", name: "street", widget: "string"},
-              {label: "City", name: "city", widget: "string"},
-              {label: "State or Province", name: "state", widget: "string"},
-              {label: "Postal or ZIP Code", name: "postal_code", widget: "string"},
-              {label: "Country", name: "country", widget: "string", default: "Canada"}
-            ]}
-          - {label: "Social Media Profiles", name: "social", widget: "object", fields: [
-              {label: "Facebook Page URL", name: "facebook", widget: "string", pattern: "^https?://(www\\.)?facebook\\.com/.+$"},
-              {label: "Instagram Profile URL", name: "instagram", widget: "string", pattern: "^https?://(www\\.)?instagram\\.com/.+$"},
-              {label: "YouTube Channel URL", name: "youtube", widget: "string", pattern: "^https?://(www\\.)?youtube\\.com/.+$"},
-              {label: "Twitter/X Profile URL", name: "twitter", widget: "string", pattern: "^https?://(www\\.)?(twitter\\.com|x\\.com)/.+$"}
-            ]}
-      
-      - name: "contact"
-        label: "📞 Contact Information & Service Schedule"
-        label_singular: "Contact Record"
-        description: "Detailed contact information and weekly service timing"
-        file: "config/contact.yaml"
-        fields:
-          - {label: "Primary Contact Phone Number", name: "phone", widget: "string", required: true}
-          - {label: "Secondary Phone Number (Optional)", name: "phone2", widget: "string", required: false}
-          - {label: "Official Email Address", name: "email", widget: "string", required: true, pattern: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"}
-          - {label: "Service Location (Building/Facility Name)", name: "location", widget: "string", required: true}
-          - label: "Weekly Service Schedule"
-            name: "service_times"
-            widget: "list"
-            label_singular: "Service Time Entry"
-            fields:
-              - {label: "Day of Week", name: "day", widget: "select", options: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], required: true}
-              - {label: "Type of Service or Gathering", name: "type", widget: "select", options: ["Worship Service", "Prayer Meeting", "Bible Study", "Youth Gathering", "Children's Ministry", "Other"], required: true}
-              - {label: "Service Start Time", name: "start_time", widget: "string", pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", required: true}
-              - {label: "Service End Time (Optional)", name: "end_time", widget: "string", pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", required: false}
-              - {label: "Location (if different from main)", name: "location", widget: "string", required: false}
-          - {label: "Emergency Contact Information", name: "emergency_contact", widget: "object", fields: [
-              {label: "Emergency Contact Name", name: "name", widget: "string"},
-              {label: "Emergency Contact Phone Number", name: "phone", widget: "string"}
-            ], required: false}
-          - {label: "Regular Office Hours", name: "office_hours", widget: "string", required: false, placeholder: "Example: Monday-Friday, 9:00 AM - 5:00 PM"}
-          - {label: "Additional Notes or Instructions", name: "notes", widget: "text", required: false}
-
-  - name: "team"
-    label: "👥 Leadership & Staff Directory"
-    label_singular: "Team Member"
-    description: "Manage information about pastors, staff, ministry leaders, and volunteers"
+  # ─────────────────────────────────────────────
+  # 1. Leadership Team
+  # ─────────────────────────────────────────────
+  - name: "leadership"
+    label: "Leadership"
+    label_singular: "Leader"
     folder: "content/team"
     create: true
-    # Using date-prefixed slugs helps with chronological organization
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    summary: "{{name}} – {{role}}"
+    delete: true
+    slug: "{{slug}}"
+    summary: "{{name}} — {{role}}"
     fields:
-      - {label: "Full Legal Name (as on official documents)", name: "name", widget: "string", required: true}
-      - {label: "Preferred Name or Nickname (for display)", name: "preferred_name", widget: "string", required: false}
-      - {label: "Official Position or Title", name: "title", widget: "select", options: ["Pastor", "Associate Pastor", "Assistant Pastor", "Minister", "Elder", "Deacon", "Director", "Coordinator", "Administrator", "Volunteer Leader", "Chaplain", "Counselor", "Other"], required: true}
-      - {label: "Specific Role Description or Ministry Focus", name: "role_detail", widget: "string", required: false, placeholder: "Example: 'Senior Pastor overseeing vision and preaching' or 'Youth Minister leading discipleship for ages 12-18'"}
-      - {label: "Biography, Testimony, or Ministry Background", name: "bio", widget: "text", required: true, placeholder: "Share their journey to faith, calling to ministry, key experiences, and current focus..."}
-      - {label: "Ordination or Licensing Status", name: "ordination", widget: "select", options: ["Ordained", "Licensed", "Commissioned", "Lay Leader", "In Training Process", "Not Ordained"], required: false}
-      - {label: "Years of Ministry Service (at this fellowship)", name: "years_service", widget: "number", value_type: "int", min: 0, max: 60, step: 1, required: false}
-      - {label: "Areas of Ministry Expertise or Specialization", name: "specialties", widget: "list", field: {label: "Area of Expertise", name: "item", widget: "string"}, required: false}
-      - label: "📧 Contact Information"
-        name: "contact"
-        widget: "object"
-        fields:
-          - {label: "Official Church Email Address", name: "email", widget: "string", pattern: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"}
-          - {label: "Direct Office Extension or Line", name: "phone", widget: "string"}
-          - {label: "Mobile Phone (for urgent ministry contact)", name: "mobile", widget: "string"}
-      - {label: "Official Headshot or Portrait", name: "photo", widget: "image", required: false}
-      - {label: "Alternative Text for Image (Accessibility/SEO)", name: "photo_alt", widget: "string", required: false, placeholder: "Describe the image for screen readers"}
-      - label: "🌐 Online Presence & Social Media"
-        name: "social"
-        widget: "object"
-        fields:
-          - {label: "Personal Ministry Website or Blog", name: "website", widget: "string"}
-          - {label: "Facebook Profile or Page", name: "facebook", widget: "string"}
-          - {label: "Instagram Profile", name: "instagram", widget: "string"}
-          - {label: "Twitter/X Account", name: "twitter", widget: "string"}
-          - {label: "LinkedIn Professional Profile", name: "linkedin", widget: "string"}
-      - {label: "Formal Education and Theological Training", name: "education", widget: "text", required: false}
-      - {label: "Languages Spoken Fluently (for ministry)", name: "languages", widget: "list", field: {label: "Language", name: "item", widget: "string"}, required: false}
-      - {label: "Available for Pastoral Counseling Appointments", name: "counseling_available", widget: "boolean", default: false}
-      - {label: "Available for Hospital/Home Visitation Ministry", name: "hospital_visits", widget: "boolean", default: false}
-      - {label: "Date Joined This Fellowship Ministry", name: "start_date", widget: "date", format: "YYYY-MM-DD", required: false}
-      - {label: "Date Left This Position (if applicable)", name: "end_date", widget: "date", format: "YYYY-MM-DD", required: false}
-      - {label: "Currently Active in This Role", name: "is_active", widget: "boolean", default: true}
-      - label: "🔐 Access Permissions & Responsibilities"
-        name: "permissions"
-        widget: "object"
-        fields:
-          - {label: "Authorized to Edit Website Content", name: "can_edit_content", widget: "boolean", default: false}
-          - {label: "Authorized to Approve Content for Publication", name: "can_publish", widget: "boolean", default: false}
-          - {label: "Has Administrative Access to CMS", name: "is_admin", widget: "boolean", default: false}
-          - {label: "Authorized to Create and Manage Events", name: "can_manage_events", widget: "boolean", default: false}
-          - {label: "Authorized to Manage Donation Records", name: "can_manage_donations", widget: "boolean", default: false}
-      - {label: "Internal Administrative Notes (Not Visible on Website)", name: "internal_notes", widget: "text", required: false}
+      - { name: "name", label: "Name", widget: "string", required: true }
+      - { name: "role", label: "Role", widget: "string", required: true }
+      - { name: "bio", label: "Bio", widget: "text", required: true }
+      - { name: "photo", label: "Photo", widget: "image", required: false }
+      - { name: "display_order", label: "Display Order", widget: "number", required: false, default: 99 }
 
+  # ─────────────────────────────────────────────
+  # 2. Events
+  # ─────────────────────────────────────────────
   - name: "events"
-    label: "📅 Events & Calendar Management"
+    label: "Events"
     label_singular: "Event"
-    description: "Schedule and manage all fellowship events, services, meetings, and activities"
     folder: "content/events"
     create: true
-    # Date-prefixed slugs help with chronological sorting in file listings
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    summary: "{{title}} {{#if date}}• {{date}}{{/if}}"
+    delete: true
+    slug: "{{slug}}"
+    summary: "{{title}} — {{date}}"
     fields:
-      - {label: "Event Title (as it will appear publicly)", name: "title", widget: "string", required: true}
-      - {label: "Type of Event or Gathering", name: "event_type", widget: "select", options: ["Sunday Worship Service", "Midweek Prayer Meeting", "Bible Study Group", "Youth Ministry Event", "Children's Ministry Activity", "Women's Ministry Meeting", "Men's Ministry Meeting", "Marriage Enrichment", "Senior's Fellowship", "Outreach & Evangelism", "Mission Trip", "Conference or Seminar", "Workshop or Training", "Concert or Musical Performance", "Festival or Celebration", "Funeral or Memorial Service", "Wedding Ceremony", "Baptism Service", "Child Dedication", "Communion Service", "Leadership Meeting", "Volunteer Training", "Support Group", "Recovery Meeting", "Prayer Vigil", "Fundraiser or Banquet", "Holiday Observance", "Community Service Project", "Other"], required: true}
-      - {label: "Event Start Date and Time", name: "start_datetime", widget: "datetime", format: "YYYY-MM-DD HH:mm", required: true, placeholder: "Example: 2026-12-25 10:30"}
-      - {label: "Event End Date and Time (if different from start)", name: "end_datetime", widget: "datetime", format: "YYYY-MM-DD HH:mm", required: false}
-      - {label: "This is an All-Day Event", name: "all_day", widget: "boolean", default: false}
-      - {label: "Primary Location or Venue Name", name: "location", widget: "string", required: true}
-      - {label: "Full Address of Venue (if different from main)", name: "location_address", widget: "string", required: false}
-      - {label: "This Event Will Be Offered Online/Virtually", name: "is_virtual", widget: "boolean", default: false}
-      - {label: "Online Meeting Link (Zoom, Google Meet, etc.)", name: "virtual_link", widget: "string", required: false, placeholder: "https://zoom.us/j/1234567890"}
-      - {label: "Detailed Description of the Event", name: "description", widget: "text", required: true}
-      - {label: "Brief Summary for Listings and Calendars", name: "summary", widget: "string", required: false}
-      - {label: "Featured Image or Graphic for Promotion", name: "image", widget: "image", required: false}
-      - {label: "Alternative Text for Image (Accessibility)", name: "image_alt", widget: "string", required: false}
-      - {label: "Event Category or Ministry Area", name: "category", widget: "select", options: ["Worship", "Discipleship", "Fellowship", "Outreach", "Education", "Service", "Prayer", "Mission", "Leadership", "Youth", "Children", "Men's Ministry", "Women's Ministry", "Senior's Ministry", "Families", "Marriage", "Recovery", "Arts & Music", "Sports & Recreation", "Health & Wellness", "Other"], required: false}
-      - {label: "Primary Target Audience or Demographic", name: "audience", widget: "select", options: ["All Ages Welcome", "Adults (18+ Years)", "Youth (Teens 12-17)", "Children (0-11 Years)", "Senior Adults (65+ Years)", "Men Only", "Women Only", "Married Couples", "Families with Children", "Singles (Never Married)", "Divorced/Separated", "Widowed", "New Believers", "Seekers & Explorers", "College Students", "Young Adults (18-25)", "Parents", "Couples Preparing for Marriage", "Other Specific Groups"], required: false}
-      - {label: "Advance Registration or Sign-Up Required", name: "requires_registration", widget: "boolean", default: false}
-      - {label: "Registration or Sign-Up Link (if applicable)", name: "registration_link", widget: "string", required: false}
-      - {label: "Participant Cost or Fee (if any)", name: "cost", widget: "string", required: false, placeholder: "Examples: Free, $5 per person, $20 family max, Donation-based"}
-      - {label: "Designated Contact Person for Questions", name: "contact_person", widget: "string", required: false}
-      - {label: "Contact Information (Phone or Email)", name: "contact_info", widget: "string", required: false}
-      - {label: "Special Materials or Equipment Participants Should Bring", name: "materials", widget: "text", required: false}
-      - {label: "Event Will Be Audio/Video Recorded", name: "will_be_recorded", widget: "boolean", default: false}
-      - {label: "Recording Will Be Available for Later Viewing", name: "recording_available", widget: "boolean", default: false}
-      - {label: "External Calendar Identifier (Google, Outlook, etc. ID)", name: "external_id", widget: "string", required: false}
-      - {label: "Tags for Filtering and Searching (e.g., Christmas, Easter, Marriage)", name: "tags", widget: "list", field: {label: "Tag", name: "tag", widget: "string"}, required: false}
-      - {label: "Show This Event Prominently on Homepage", name: "featured", widget: "boolean", default: false}
-      - {label: "Send Automated Email Reminder to Registrants", name: "send_reminder", widget: "boolean", default: false}
-      - {label: "Hours Before Event to Send Reminder (e.g., 24 for 1 day prior)", name: "reminder_hours", widget: "number", value_type: "int", min: 0, max: 168, step: 1, default: 24}
-      - {label: "How This Event Was Scheduled or Reported", name: "source", widget: "select", options: ["Staff or Volunteer Submission", "Weekly Bulletin or Announcement", "Website Submission Form", "Phone Call to Office", "Email to Ministry Inbox", "Pulpit Announcement", "Social Media Request", "Denominational Calendar", "Other"], required: false}
-      - {label: "Event Details Verified by Ministry Leader", name: "verified", widget: "boolean", default: false}
-      - {label: "Internal Planning Notes (Not Public)", name: "notes", widget: "text", required: false}
+      - { name: "title", label: "Event Title", widget: "string", required: true }
+      - { name: "date", label: "Date & Time", widget: "datetime", required: true }
+      - { name: "location", label: "Location", widget: "string", required: true }
+      - { name: "description", label: "Description", widget: "text", required: true }
+      - { name: "featured_image", label: "Featured Image", widget: "image", required: false }
 
+  # ─────────────────────────────────────────────
+  # 3. Ministries
+  # ─────────────────────────────────────────────
   - name: "ministries"
-    label: "🏛️ Ministries & Ongoing Programs"
+    label: "Ministries"
     label_singular: "Ministry"
-    description: "Manage ongoing ministries, programs, outreaches, and regular meetings"
     folder: "content/ministries"
     create: true
+    delete: true
     slug: "{{slug}}"
-    summary: "{{name}} – Led by {{leader}}"
+    summary: "{{name}} — {{leader}}"
     fields:
-      - {label: "Official Ministry or Program Name", name: "name", widget: "string", required: true}
-      - {label: "Ministry Type or Category", name: "ministry_type", widget: "select", options: ["Outreach & Evangelism", "Discipleship & Spiritual Formation", "Worship & Liturgy", "Christian Education", "Fellowship & Community", "Service & Compassion", "Pastoral Care & Counseling", "Prayer & Intercession", "Missions & Outreach", "Media & Communications", "Children's Ministry", "Youth Ministry", "Young Adults Ministry", "Men's Ministry", "Women's Ministry", "Senior Adults Ministry", "Family Ministry", "Couples Ministry", "Support Groups", "Recovery Ministry", "Health & Wellness", "Financial Stewardship", "Facilities Management", "Security & Safety", "Hospitality & Greeting", "Other Specialized Ministry"], required: true}
-      - {label: "Primary Leader, Pastor, or Coordinator", name: "leader", widget: "string", required: true}
-      - {label: "Assistant Leaders, Co-Leaders, or Team Members", name: "assistans", widget: "list", field: {label: "Assistant Leader Name", name: "assistant", widget: "string"}, required: false}
-      - {label: "Mission Statement or Purpose (1-2 sentences)", name: "description", widget: "text", required: true}
-      - {label: "Long-Term Vision Statement (3-5 year outlook)", name: "vision", widget: "text", required: false}
-      - {label: "Primary Target Demographic or Audience", name: "demographic", widget: "select", options: ["All Ages", "Infants & Toddlers (0-2 Years)", "Preschool Age (3-5 Years)", "Elementary Age (6-11 Years)", "Youth/Teens (12-17 Years)", "Young Adults (18-25 Years)", "Adults (26-40 Years)", "Middle Adults (41-60 Years)", "Senior Adults (65+ Years)", "Men Only", "Women Only", "Married Couples", "Families with Children", "Single Adults", "Divorced/Separated Individuals", "Widowed Persons", "New Believers (Less than 1 Year)", "Seekers & Explorers", "College & University Students", "People with Disabilities", "Experiencing Homelessness", "Immigrants & Refugees", "Incarcerated or Formerly Incarcerated", "Other Specific Group"], required: false}
-      - {label: "Regular Meeting Schedule and Frequency", name: "schedule", widget: "object", fields: [
-          {label: "How Often Does This Ministry Meet?", name: "frequency", widget: "select", options: ["Meets Weekly", "Meets Every Other Week", "Meets Monthly", "Meets Quarterly", "Meets Twice Per Year", "Meets Annually", "As Needed or Scheduled", "Sunday Mornings Before/After Service", "Sunday Evenings", "Wednesday Evenings", "Friday Evenings", "Saturday Mornings", "Other Regular Pattern"], required: true},
-          {label: "Specific Day of Week (if applicable)", name: "day", widget: "select", options: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], required: false},
-          {label: "Time of Day When Meetings Typically Occur", name: "time", widget: "select", options: ["Early Morning (5am-8am)", "Morning (8am-12pm)", "Noon Time (11am-1pm)", "Afternoon (12pm-5pm)", "Early Evening (5pm-8pm)", "Evening (8pm-11pm)", "Late Night (11pm-1am)", "Specific Time Varies", "No Set Time"], required: false},
-          {label: "Exact Start Time (if specific time selected)", name: "specific_time", widget: "string", pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", required: false},
-          {label: "Meeting Location or Room Designation", name: "location", widget: "string", required: false}
-        ]}
-      - {label: "Primary Meeting Location or Facility", name: "location", widget: "string", required: true}
-      - {label: "Alternate or Backup Location (if primary unavailable)", name: "alt_location", widget: "string", required: false}
-      - {label: "Maximum Number of Participants (if applicable)", name: "capacity", widget: "number", value_type: "int", min: 0, required: false}
-      - {label: "Current Average Attendance or Participation", name: "current_count", widget: "number", value_type: "int", min: 0, required: false}
-      - {label: "Is This Ministry Currently Active and Meeting?", name: "is_active", widget: "boolean", default: true}
-      - {label: "This Ministry Only Meets During Certain Seasons", name: "is_seasonal", widget: "boolean", default: false}
-      - {label: "Active Months During the Year (if seasonal)", name: "active_months", widget: "list", field: {label: "Month", name: "month", widget: "select", options: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]}, required: false}
-      - {label: "Participants Must Register or Sign Up in Advance", name: "requires_signup", widget: "boolean", default: false}
-      - {label: "Information on How to Register or Sign Up", name: "signup_info", widget: "string", required: false}
-      - {label: "Cost to Participate (if any)", name: "cost", widget: "string", required: false, placeholder: "Examples: Free, Suggested donation $5-10, $25 per semester, etc."}
-      - {label: "Childcare Provided During Meetings", name: "childcare_available", widget: "boolean", default: false}
-      - {label: "Transportation Assistance Provided", name: "transportation", widget: "boolean", default: false}
-      - {label: "Type of Meals or Food Provided", name: "meals", widget: "select", options: ["No Food Provided", "Light Snacks or Beverages Only", "Simple Light Meals", "Full Meals Provided", "Potluck Style (Bring & Share)"], required: false}
-      - {label: "Curriculum, Study Materials, or Resources Used", name: "curriculum", widget: "string", required: false}
-      - {label: "Current Need for Additional Volunteers or Helpers", name: "needs_volunteers", widget: "boolean", default: false}
-      - {label: "Specific Volunteer Roles Currently Needed", name: "volunteer_roles", widget: "list", field: {label: "Volunteer Role Description", name: "role", widget: "string"}, required: false}
-      - {label: "Specific Space or Room Requirements", name: "space_needs", widget: "text", required: false}
-      - {label: "Special Equipment Needs or Requirements", name: "equipment", widget: "text", required: false}
-      - {label: "Organizations, Churches, or Groups Partnered With", name: "partners", widget: "list", field: {label: "Partner Organization Name", name: "partner", widget: "string"}, required: false}
-      - {label: "Personal Testimonies or Success Stories from Participants", name: "testimonies", widget: "list", field: {label: "Participant Testimony or Story", name: "testimony", widget: "text"}, required: false}
-      - {label: "Promotional Photo or Graphic for This Ministry", name: "image", widget: "image", required: false}
-      - {label: "Alternative Text for Ministry Image (Accessibility)", name: "image_alt", widget: "string", required: false}
-      - {label: "Relevant External Websites or Online Resources", name: "external_links", widget: "list", field: {label: "Resource Link or URL", name: "link", widget: "string"}, required: false}
-      - {label: "Date This Ministry Information Was Last Reviewed", name: "last_reviewed", widget: "date", format: "YYYY-MM-DD", required: false}
-      - {label: "How Often Should This Ministry Be Reviewed?", name: "review_frequency", widget: "select", options: ["Monthly Review", "Quarterly Review", "Twice Per Year (Bi-annual)", "Annual Review", "As Needed Based on Circumstances"], required: false}
-      - {label: "Specific Goals, Objectives, or Outcomes for This Period", name: "goals", widget: "text", required: false}
-      - {label: "Annual Budget Allocation for This Ministry (if applicable)", name: "budget", widget: "string", required: false, placeholder: "Example: $0 (volunteer-run), $500 annually, $2000 for special events, etc."}
-      - {label: "This Ministry Has an Outreach or Evangelistic Focus", name: "is_outreach", widget: "boolean", default: false}
-      - {label: "Primary Geographic Area or Neighborhood Served", name: "target_area", widget: "string", required: false}
-      - {label: "Formal Connection to Denominational or Organizational Affiliations", name: "denom_ties", widget: "string", required: false}
-      - {label: "Required Licenses, Certifications, or Official Credentials", name: "certifications", widget: "text", required: false}
-      - {label: "Volunteers Require Background Checks Before Serving", name: "bg_check_required", widget: "boolean", default: false}
-      - {label: "Current Obstacles, Challenges, or Unmet Needs", name: "challenges", widget: "text", required: false}
-      - {label: "Identified Opportunities for Growth or Expansion", name: "growth_opportunities", widget: "text", required: false}
-      - {label: "This Ministry Is Regularly Featured in Communications", name: "featured", widget: "boolean", default: false}
-      - {label: "Ministry Has Been Reviewed and Approved by Leadership Board", name: "verified", widget: "boolean", default: false}
-      - {label: "Internal Administrative Notes and Historical Records", name: "admin_notes", widget: "text", required: false}
+      - { name: "name", label: "Ministry Name", widget: "string", required: true }
+      - { name: "leader", label: "Leader", widget: "string", required: true }
+      - { name: "description", label: "Description", widget: "text", required: true }
+      - name: "meeting_day"
+        label: "Meeting Day"
+        widget: "select"
+        required: false
+        options:
+          - { label: "Sunday", value: "Sunday" }
+          - { label: "Tuesday", value: "Tuesday" }
+          - { label: "Wednesday", value: "Wednesday" }
+          - { label: "Other", value: "Other" }
+        default: "Sunday"
+      - { name: "meeting_time", label: "Meeting Time", widget: "string", required: false }
+      - { name: "photo", label: "Photo", widget: "image", required: false }
+      - { name: "is_active", label: "Is Active", widget: "boolean", required: false, default: true }
+
+  # ─────────────────────────────────────────────
+  # 4. Contact Info (single file)
+  # ─────────────────────────────────────────────
+  - name: "contact_info"
+    label: "Contact Info"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "contact"
+        label: "Contact Info"
+        file: "config/contact.yaml"
+        fields:
+          - { name: "phone", label: "Phone", widget: "string", required: true }
+          - { name: "mobile_phone", label: "Mobile Phone", widget: "string", required: false }
+          - { name: "email", label: "Email", widget: "string", required: true }
+          - { name: "address", label: "Address", widget: "string", required: true }
+          - name: "service_times"
+            label: "Service Times"
+            widget: "list"
+            summary: "{{day}} — {{time}}"
+            fields:
+              - { name: "day", label: "Day", widget: "string", required: true }
+              - { name: "time", label: "Time", widget: "string", required: true }
+              - { name: "type", label: "Type", widget: "string", required: true }

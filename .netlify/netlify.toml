@@ -1,0 +1,27 @@
+plugins = []
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Volumes/512-B/Documents/Hermes/AGENTS/workspace/abiding-place-fellowship-cms/public"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm install && npm run build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]

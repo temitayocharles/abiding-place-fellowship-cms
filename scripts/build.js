@@ -131,15 +131,41 @@ async function build() {
     }
   });
 
+  // Copy admin/ directory (Decap CMS config and editor)
+  const adminSrc = path.join(ROOT, 'admin');
+  if (fs.existsSync(adminSrc)) {
+    const adminDest = path.join(PUBLIC_DIR, 'admin');
+    fs.cpSync(adminSrc, adminDest, { recursive: true });
+    // Ensure admin/index.html exists (Decap CMS entry point)
+    const adminIndex = path.join(adminDest, 'index.html');
+    if (!fs.existsSync(adminIndex)) {
+      // Use editor.html as the admin index if it exists
+      const editorFile = path.join(adminDest, 'editor.html');
+      if (fs.existsSync(editorFile)) {
+        fs.copyFileSync(editorFile, adminIndex);
+      } else {
+        // Create a minimal Decap CMS index.html
+        const cmsIndex = `<!doctype html>\n<html>\n<head>\n  <meta charset="utf-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>CMS Editor - Abiding Place Fellowship</title>\n  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>\n</head>\n<body>\n  <!-- Decap CMS loads here -->\n</body>\n</html>`;
+        fs.writeFileSync(adminIndex, cmsIndex);
+      }
+    }
+    console.log('✅ Copied admin/ (Decap CMS)');
+  }
+
   const staticFiles = ['admin.html', 'css/theme.css', 'mobile-nav.js', 'design-system.json',
     'our-friends.html', 'missions.html', 'photos.html', 'our-faith.html', 'blog.html'];
   staticFiles.forEach(file => {
     const src = path.join(ROOT, file);
     if (fs.existsSync(src)) {
-      const dest = path.join(PUBLIC_DIR, file);
+      let destPath = file;
+      // Rename admin/editor.html → admin/index.html in the output
+      if (file === 'admin/editor.html') {
+        destPath = 'admin/index.html';
+      }
+      const dest = path.join(PUBLIC_DIR, destPath);
       fs.mkdirSync(path.dirname(dest), { recursive: true });
       fs.copyFileSync(src, dest);
-      console.log(`✅ Copied ${file}`);
+      console.log(`✅ Copied ${file} → ${destPath}`);
     }
   });
 
