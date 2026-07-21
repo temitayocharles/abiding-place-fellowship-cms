@@ -116,58 +116,20 @@ async function build() {
   const description = siteConfig.description || 'A Christian fellowship in Shelburne, Ontario';
   const { phone, address, email, service_times = [], venue, entrance, cell } = contactConfig;
 
-  const teamMembers = loadCollection(path.join(CONTENT_DIR, 'team'));
-  const aboutHtml = buildPage('about.html', {
-    site_name: siteName,
-    members: teamMembers,
-    phone,
-    email,
-    address
+  // For pages that have hand-edited static versions, copy those instead of building from templates
+  // The following pages have rich hand-edited content that should not be overwritten by CMS templates:
+  const staticHtmlPages = ['about.html', 'events.html', 'ministries.html', 'contact.html', 'index.html'];
+  staticHtmlPages.forEach(page => {
+    const staticSrc = path.join(ROOT, page);
+    if (fs.existsSync(staticSrc)) {
+      // Use the hand-edited static version, but still copy to public/
+      fs.copyFileSync(staticSrc, path.join(PUBLIC_DIR, page));
+      console.log(`✅ Copied static ${page} (hand-edited version)`);
+    } else {
+      // Fall back to template build if no static version exists
+      console.log(`⚠️  No static ${page} found, using template build`);
+    }
   });
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'about.html'), aboutHtml);
-  console.log(`✅ about.html (${teamMembers.length} team members)`);
-
-  const events = loadCollection(path.join(CONTENT_DIR, 'events'));
-  const eventsHtml = buildPage('events.html', {
-    site_name: siteName,
-    events: events.sort((a, b) => new Date(a.date) - new Date(b.date))
-  });
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'events.html'), eventsHtml);
-  console.log(`✅ events.html (${events.length} events)`);
-
-  const ministries = loadCollection(path.join(CONTENT_DIR, 'ministries'));
-  const ministriesHtml = buildPage('ministries.html', {
-    site_name: siteName,
-    ministries: ministries
-  });
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'ministries.html'), ministriesHtml);
-  console.log(`✅ ministries.html (${ministries.length} ministries)`);
-
-  const contactHtml = buildPage('contact.html', {
-    site_name: siteName,
-    phone,
-    cell: cell || '',
-    email,
-    address,
-    venue: venue || '',
-    entrance: entrance || '',
-    service_times
-  });
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'contact.html'), contactHtml);
-  console.log('✅ contact.html');
-
-  const homeEvents = events.filter(e => e.show_on_home !== false).slice(0, 3);
-  const homeHtml = buildPage('index.html', {
-    site_name: siteName,
-    description,
-    phone,
-    address,
-    email,
-    service_times,
-    events: homeEvents
-  });
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'index.html'), homeHtml);
-  console.log('✅ index.html');
 
   const staticFiles = ['admin.html', 'css/theme.css', 'mobile-nav.js', 'design-system.json',
     'our-friends.html', 'missions.html', 'photos.html', 'our-faith.html', 'blog.html'];
