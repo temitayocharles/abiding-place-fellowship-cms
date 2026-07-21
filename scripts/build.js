@@ -169,7 +169,8 @@ async function build() {
   fs.writeFileSync(path.join(PUBLIC_DIR, 'index.html'), homeHtml);
   console.log('✅ index.html');
 
-  const staticFiles = ['admin.html', 'css/theme.css', 'mobile-nav.js', 'design-system.json'];
+  const staticFiles = ['admin.html', 'css/theme.css', 'mobile-nav.js', 'design-system.json',
+    'our-friends.html', 'missions.html', 'photos.html', 'our-faith.html', 'blog.html'];
   staticFiles.forEach(file => {
     const src = path.join(ROOT, file);
     if (fs.existsSync(src)) {
@@ -179,6 +180,14 @@ async function build() {
       console.log(`✅ Copied ${file}`);
     }
   });
+
+  // Copy images directory
+  const imagesSrc = path.join(ROOT, 'images');
+  if (fs.existsSync(imagesSrc)) {
+    const imagesDest = path.join(PUBLIC_DIR, 'images');
+    fs.cpSync(imagesSrc, imagesDest, { recursive: true });
+    console.log('✅ Copied images/');
+  }
 
   const assetsSrc = path.join(ROOT, 'assets');
   if (fs.existsSync(assetsSrc)) {
