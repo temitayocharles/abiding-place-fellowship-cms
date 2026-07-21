@@ -209,6 +209,9 @@
   </style>
 </head>
 <body>
+  <!-- Decap CMS mount point (must be the first element in body) -->
+  <div id="root"></div>
+
   <!-- Branded loading placeholder, shown until Decap mounts -->
   <div class="ap-loading" id="ap-loading" aria-hidden="false">
     <svg class="ap-loading__mark" viewBox="0 0 24 24" aria-hidden="true">
@@ -217,9 +220,6 @@
     <div class="ap-loading__title">Abiding Place Fellowship</div>
     <div class="spinning-dots" aria-hidden="true"><span></span><span></span><span></span></div>
   </div>
-
-  <!-- Decap CMS mount point -->
-  <div id="root"></div>
 
   <script>
     // The admin should also work when served at /admin/ — Decap
