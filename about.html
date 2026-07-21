@@ -8,21 +8,31 @@
 <meta content="Learn the verified story, leadership and statement of faith of Abiding Place Fellowship, a Spirit-filled Christian fellowship founded in Shelburne in 2004." name="description"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800&amp;family=Varela+Round&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-    :root { --color-primary: #2563EB; --color-primary-dark: #1D4ED8; --color-primary-light: #3B82F6; --color-secondary: #059669; --color-accent: #D97706; --color-background: #F8FAFC; --color-surface: #FFFFFF; --color-foreground: #0F172A; --color-foreground-muted: #475569; --color-muted: #F1F5FD; --color-border: #E4ECFC; --font-heading: 'Varela Round', sans-serif; --font-body: 'Nunito Sans', sans-serif; --space-sm: 1rem; --space-md: 1.5rem; --space-lg: 2rem; --space-xl: 3rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1); --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    :root { --color-primary: #2563EB; --color-primary-dark: #1D4ED8; --color-primary-light: #3B82F6; --color-secondary: #059669; --color-accent: #D97706; --color-background: #F8FAFC; --color-surface: #FFFFFF; --color-foreground: #0F172A; --color-foreground-muted: #475569; --color-muted: #F1F5FD; --color-border: #E4ECFC; --font-heading: 'Space Grotesk', sans-serif; --font-body: 'DM Sans', sans-serif; --space-sm: 1rem; --space-md: 1.5rem; --space-lg: 2rem; --space-xl: 3rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1); --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1); --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1); }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; scroll-padding-top: 96px; }
     body { font-family: var(--font-body); line-height: 1.6; color: var(--color-foreground); background: var(--color-background); padding-top: 84px; }
     h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
     h1 { font-size: 2.75rem; } h2 { font-size: 2.25rem; } h3 { font-size: 1.5rem; }
     p { margin-bottom: var(--space-md); }
-    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; height: 84px; display: flex; align-items: center; background: var(--color-surface); border-bottom: 1px solid var(--color-border); backdrop-filter: blur(14px); box-shadow: var(--shadow-md); transition: all 0.3s; }
-    .navbar-container { max-width: 1200px; margin: 0 auto; padding: var(--space-md); display: flex; justify-content: space-between; align-items: center; }
-    .navbar-brand { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; }
-    .navbar-menu { display: flex; gap: var(--space-md); list-style: none; }
-    .navbar-menu a { padding: var(--space-sm); font-weight: 600; border-radius: var(--radius-lg); text-decoration: none; color: var(--color-foreground); transition: all 0.3s; }
-    .navbar-menu a.active { background: var(--color-muted); color: var(--color-primary); }
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; height: 84px; display: flex; align-items: center; background: rgba(255,255,255,0.96); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(0,0,0,0.08); box-shadow: var(--shadow-md); transition: all 0.3s; }
+    .navbar-container { max-width: 1400px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .navbar-brand { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-heading); font-size: 1.375rem; font-weight: 700; color: #111827; text-decoration: none; }
+    .navbar-brand svg { width: 32px; height: 32px; fill: var(--color-primary); }
+    .navbar-menu { display: flex; gap: 0.25rem; list-style: none; align-items: center; }
+    .navbar-menu a { display: inline-flex; align-items: center; padding: 0.5rem 1rem; font-size: 0.938rem; font-weight: 500; color: #374151; border-radius: 0.5rem; transition: all 0.2s; min-height: 44px; position: relative; text-decoration: none; }
+    .navbar-menu a::after { content: ''; position: absolute; bottom: 4px; left: 50%; width: 0; height: 2px; background: var(--color-primary); transform: translateX(-50%); transition: width 0.3s; }
+    .navbar-menu a:hover, .navbar-menu a.active { color: var(--color-primary); }
+    .navbar-menu a:hover::after, .navbar-menu a.active::after { width: 70%; }
+    .navbar-cta { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem; background: var(--color-primary); color: #fff; font-weight: 600; border-radius: 0.5rem; transition: all 0.3s; box-shadow: var(--shadow-md); min-height: 44px; margin-left: 0.5rem; text-decoration: none; }
+    .navbar-cta:hover { background: var(--color-primary-dark); transform: translateY(-2px); }
+    .navbar-toggle { display: none; flex-direction: column; gap: 5px; padding: 0.5rem; background: none; border: none; cursor: pointer; min-width: 44px; }
+    .navbar-toggle span { width: 24px; height: 2px; background: #1F2937; transition: all 0.3s; }
+    .navbar-toggle[aria-expanded="true"] span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .navbar-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .navbar-toggle[aria-expanded="true"] span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
     .hero { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%); color: #fff; padding: 4rem 2rem; text-align: center; }
     .hero h1 { color: #fff; margin-bottom: var(--space-md); }
     .section { padding: var(--space-xl) 2rem; }
@@ -56,7 +66,7 @@
 <body>
 <nav class="navbar">
 <div class="navbar-container">
-<a class="navbar-brand" href="index.html">Abiding Place <span style="color: var(--color-primary);">Fellowship</span></a>
+<a class="navbar-brand" href="index.html"><svg viewBox="0 0 24 24"><path d="M11.5 2L2 7v13h20V7L12.5 2h-1zM20 18H4V8l8.5 4.5L20 8v10z"></path></svg>Abiding Place Fellowship</a>
 <button aria-label="Toggle menu" class="navbar-toggle">
 <span></span><span></span><span></span>
 </button>
@@ -71,6 +81,7 @@
 <li><a href="ministries.html">Ministries</a></li>
 <li><a href="events.html">Events</a></li>
 <li><a href="contact.html">Contact</a></li>
+<li><a class="navbar-cta" href="contact.html">Visit Us</a></li>
 </ul>
 </div>
 </nav>
@@ -94,12 +105,6 @@
 </div>
 <div class="footer-bottom"><p>© 2026 Abiding Place Fellowship. All rights reserved.</p></div>
 </footer>
-<script>
-    const toggle = document.querySelector('.navbar-toggle');
-    const menu = document.querySelector('.navbar-menu');
-    toggle?.addEventListener('click', () => {
-      menu.classList.toggle('active');
-    });
-  </script>
+<script>const t=document.querySelector('.navbar-toggle'),m=document.querySelector('.navbar-menu'),n=document.querySelector('.navbar');t.addEventListener('click',()=>{t.setAttribute('aria-expanded',t.getAttribute('aria-expanded')==='true'?'false':'true');m.classList.toggle('active')});m.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{m.classList.remove('active');t.setAttribute('aria-expanded','false')}));window.addEventListener('scroll',()=>{n.classList.toggle('scrolled',window.scrollY>50)},{passive:true});</script>
 </body>
 </html>
