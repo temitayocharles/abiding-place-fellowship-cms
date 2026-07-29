@@ -1,0 +1,47 @@
+name: Render AI Email TikTok Shorts
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/render-ai-email-tiktok-shorts.sh
+      - .github/workflows/render-ai-email-tiktok-shorts.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/render-ai-email-tiktok-shorts.sh
+      - .github/workflows/render-ai-email-tiktok-shorts.yml
+      - .tiktok-render-trigger
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Cut, caption and package TikTok clips
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install media dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends ffmpeg fonts-dejavu-core python3-pip
+
+      - name: Render vertical clips
+        env:
+          DRIVE_URL: https://drive.google.com/file/d/1bCkkDXuqMgVaINS5IScfbkxDVJfdjIeo/view?usp=share_link
+        run: bash scripts/render-ai-email-tiktok-shorts.sh
+
+      - name: Upload TikTok package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-email-assistant-tiktok-shorts
+          path: dist/tiktok-shorts/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
