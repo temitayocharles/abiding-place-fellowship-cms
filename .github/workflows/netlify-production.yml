@@ -41,8 +41,31 @@ jobs:
           node - <<'NODE'
           const fs = require('fs');
           const result = JSON.parse(fs.readFileSync('/tmp/netlify-preview.json', 'utf8'));
-          const url = result.deploy_ssl_url || result.deploy_url || result.ssl_url || result.url;
-          if (!url) throw new Error('Netlify did not return a preview URL');
+          const preferredKeys = [
+            'deploy_ssl_url', 'deploy_url', 'deployUrl', 'deployURL',
+            'ssl_url', 'sslUrl', 'site_url', 'siteUrl', 'url'
+          ];
+          let url;
+          for (const key of preferredKeys) {
+            if (typeof result[key] === 'string' && result[key].includes('netlify')) {
+              url = result[key];
+              break;
+            }
+          }
+          function inspect(value) {
+            if (url) return;
+            if (typeof value === 'string' && /^https?:\/\//.test(value) && value.includes('netlify')) {
+              url = value;
+              return;
+            }
+            if (Array.isArray(value)) value.forEach(inspect);
+            else if (value && typeof value === 'object') Object.values(value).forEach(inspect);
+          }
+          inspect(result);
+          if (!url) {
+            console.log(`Netlify response keys: ${Object.keys(result).join(', ')}`);
+            throw new Error('Netlify created the preview but did not return a discoverable URL');
+          }
           console.log(`Temporary preview URL: ${url}`);
           console.log('This anonymous preview expires unless claimed; it is used only for delivery validation.');
           NODE
