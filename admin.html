@@ -3,87 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard - Abiding Place Fellowship</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Website Administration · Abiding Place Fellowship</title>
   <meta name="description" content="Manage website content for Abiding Place Fellowship" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
-    .cms-container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
-    .cms-header { text-align: center; margin-bottom: 3rem; }
-    .cms-header h1 { color: #2563EB; font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .cms-header p { color: #666; font-size: 1.1rem; }
-    .cms-card { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .cms-card h2 { color: #0F172A; margin-bottom: 1rem; font-size: 1.5rem; }
-    .cms-card p { color: #475569; margin-bottom: 1.5rem; line-height: 1.6; }
-    .cms-btn { 
-      display: inline-block; 
-      padding: 1rem 2rem; 
-      background: #2563EB; 
-      color: white; 
-      text-decoration: none; 
-      border-radius: 8px; 
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-    .cms-btn:hover { background: #1D4ED8; transform: translateY(-2px); }
-    .cms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
-    .cms-info { background: #F1F5FD; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
-    .cms-info strong { color: #2563EB; }
-  </style>
+    :root{--primary:#2563EB;--primary-dark:#1E40AF;--bg:#F8FAFC;--surface:#fff;--text:#0F172A;--muted:#475569;--border:#E4ECFC}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.65}.cms-container{max-width:1080px;margin:auto;padding:2rem}.cms-header{text-align:center;padding:2.5rem 1rem}.cms-header h1{font:700 clamp(2.1rem,6vw,3.5rem)/1.1 'Space Grotesk',sans-serif;color:var(--primary)}.cms-header p{color:var(--muted);font-size:1.1rem;margin-top:.6rem}.cms-card{background:var(--surface);border:1px solid var(--border);border-radius:1rem;padding:2rem;margin-bottom:1.5rem;box-shadow:0 8px 24px rgba(15,23,42,.07)}.cms-card h2{font:700 1.55rem 'Space Grotesk',sans-serif;margin-bottom:.8rem}.cms-card p{color:var(--muted);margin-bottom:1rem}.cms-btn{display:inline-block;padding:1rem 1.5rem;background:var(--primary);color:#fff;text-decoration:none;border-radius:.7rem;font-weight:700;box-shadow:0 8px 18px rgba(37,99,235,.24)}.cms-btn:hover{background:var(--primary-dark)}.cms-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.5rem}.step{background:#F1F5FD;border-radius:.8rem;padding:1.2rem}.step strong{display:block;color:var(--primary);margin-bottom:.35rem}.cms-info{background:#EFF6FF;border-left:4px solid var(--primary);padding:1rem 1.2rem;border-radius:.6rem;margin:1rem 0}.actions{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}.secondary{background:#fff;color:var(--primary);border:1px solid var(--primary);box-shadow:none}ul{padding-left:1.4rem;color:var(--muted)}li{margin:.45rem 0}</style>
 </head>
-<body>
-  <div class="cms-container">
-    <div class="cms-header">
-      <h1>🏠 Abiding Place Fellowship</h1>
-      <p>Admin Dashboard - Edit Website Content</p>
-    </div>
-
-    <div class="cms-card">
-      <h2>Welcome to the CMS</h2>
-      <p>This is the content management system for the Abiding Place Fellowship website. Log in below to edit website content without any coding knowledge.</p>
-      
-      <div style="text-align: center; margin: 2rem 0;">
-        <a href="admin/" class="cms-btn">🔐 Login to Edit Content</a>
-      </div>
-
-      <div class="cms-info">
-        <strong>What you can edit:</strong>
-        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-          <li>👥 Leadership (names, roles, bios, photos)</li>
-          <li>📅 Events (dates, locations, descriptions)</li>
-          <li>🏛️ Ministries (kids, youth, adults programs)</li>
-          <li>📞 Contact Info (phone, email, address)</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="cms-card">
-      <h2>How It Works</h2>
-      <div class="cms-grid">
-        <div>
-          <h3 style="color: #2563EB; margin-bottom: 0.5rem;">1. Click Login</h3>
-          <p style="color: #666;">Use your Google account to log in securely.</p>
-        </div>
-        <div>
-          <h3 style="color: #2563EB; margin-bottom: 0.5rem;">2. Edit Content</h3>
-          <p style="color: #666;">Fill out simple forms to update leadership, events, ministries, or contact info.</p>
-        </div>
-        <div>
-          <h3 style="color: #2563EB; margin-bottom: 0.5rem;">3. Publish</h3>
-          <p style="color: #666;">Click "Publish" and changes go live in ~30 seconds.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="cms-card">
-      <h2>Quick Tips</h2>
-      <ul style="color: #475569; padding-left: 1.5rem; line-height: 2;">
-        <li>Click <strong>Save</strong> in the editor when you're happy with your changes</li>
-        <li>Use the <strong>Preview</strong> button to see how a page will look before publishing</li>
-        <li>Use the <strong>Status</strong> panel to see what's published vs. draft</li>
-        <li>If you have any trouble, just call Charles at [phone] and he will help</li>
-      </ul>
-    </div>
-  </div>
-</body>
+<body><main class="cms-container"><header class="cms-header"><h1>Abiding Place Fellowship</h1><p>Website Administration</p></header><section class="cms-card"><h2>Manage the website</h2><p>Use the editor to update confirmed church information without changing code or page design.</p><div class="actions"><a class="cms-btn" href="/admin/">Open Website Editor</a><a class="cms-btn secondary" href="/admin/help.html">Read Editor Help</a><a class="cms-btn secondary" href="/" target="_blank" rel="noopener">View Public Website</a></div><div class="cms-info"><strong>You can manage:</strong><ul><li>Announcements and special events</li><li>Weekly worship and Bible-study times</li><li>Leadership profiles and approved photos</li><li>Ministries, contact details, address, and service information</li></ul></div></section><section class="cms-card"><h2>Three simple steps</h2><div class="cms-grid"><div class="step"><strong>1. Sign in</strong>Use the church account invitation or approved login.</div><div class="step"><strong>2. Make the change</strong>Choose a section and complete the clearly labelled fields.</div><div class="step"><strong>3. Publish and verify</strong>Publish, then open the public website and confirm the result.</div></div></section><section class="cms-card"><h2>Publication reminder</h2><p>Confirm dates, times, leadership titles, study topics, and special events before publishing. Hidden announcements can be restored later.</p><p>Support: <a href="mailto:abidingplaceministries@sympatico.ca">abidingplaceministries@sympatico.ca</a></p></section></main></body>
 </html>
