@@ -66,9 +66,41 @@ jobs:
             console.log(`Netlify response keys: ${Object.keys(result).join(', ')}`);
             throw new Error('Netlify created the preview but did not return a discoverable URL');
           }
+          url = url.replace(/^http:/, 'https:').replace(/\/$/, '');
+          fs.appendFileSync(process.env.GITHUB_ENV, `PREVIEW_URL=${url}\n`);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Temporary Netlify preview\n\n${url}\n`);
           console.log(`Temporary preview URL: ${url}`);
           console.log('This anonymous preview expires unless claimed; it is used only for delivery validation.');
           NODE
+      - name: Verify live pages, CMS assets, redirects, and headers
+        run: |
+          set -euo pipefail
+          for path in / /about.html /ministries.html /events.html /contact.html /admin/ /admin/help.html /admin/config.yml /content/site-data.json; do
+            code="$(curl -sS -L -o /tmp/response -w '%{http_code}' "$PREVIEW_URL$path")"
+            test "$code" = "200"
+            test -s /tmp/response
+          done
+
+          curl -fsSL "$PREVIEW_URL/" | grep -q 'Welcome to Abiding Place'
+          curl -fsSL "$PREVIEW_URL/events.html" | grep -q 'Regular Weekly Gatherings'
+          curl -fsSL "$PREVIEW_URL/contact.html" | grep -q 'Mel Lloyd Centre'
+          curl -fsSL "$PREVIEW_URL/admin/" | grep -q 'Content Editor'
+          curl -fsSL "$PREVIEW_URL/admin/help.html" | grep -q 'Website Editor Help'
+          curl -fsSL "$PREVIEW_URL/admin/config.yml" | grep -q 'name: git-gateway'
+          curl -fsSL "$PREVIEW_URL/admin/config.yml" | grep -q 'https://abidingplace.netlify.app'
+          curl -fsSL "$PREVIEW_URL/content/site-data.json" | node -e '
+            let body = "";
+            process.stdin.on("data", chunk => body += chunk);
+            process.stdin.on("end", () => {
+              const data = JSON.parse(body);
+              if (!data.contact || data.contact.venue !== "Mel Lloyd Centre") process.exit(1);
+              if (!Array.isArray(data.gatherings) || data.gatherings.length < 3) process.exit(1);
+            });
+          '
+
+          curl -fsSI "$PREVIEW_URL/admin/" | tr -d '\r' | grep -qi '^x-robots-tag: noindex, nofollow'
+          curl -fsSI "$PREVIEW_URL/" | tr -d '\r' | grep -qi '^x-content-type-options: nosniff'
+          curl -fsSI "$PREVIEW_URL/admin/config.yml" | tr -d '\r' | grep -qi '^cache-control: no-cache'
 
   production:
     if: github.event_name == 'push'
