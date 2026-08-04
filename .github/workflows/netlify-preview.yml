@@ -38,6 +38,20 @@ jobs:
           node - <<'NODE'
           const fs = require('fs');
           const result = JSON.parse(fs.readFileSync('/tmp/netlify-preview.json', 'utf8'));
+
+          const describe = (value, key = '') => {
+            if (/token|secret|password|authorization/i.test(key)) return '[redacted]';
+            if (typeof value === 'string') {
+              return /^https?:\/\//.test(value) ? value : `[string:${value.length}]`;
+            }
+            if (Array.isArray(value)) return value.map((entry) => describe(entry));
+            if (value && typeof value === 'object') {
+              return Object.fromEntries(Object.entries(value).map(([childKey, childValue]) => [childKey, describe(childValue, childKey)]));
+            }
+            return value;
+          };
+          console.log(`Anonymous deploy response shape: ${JSON.stringify(describe(result))}`);
+
           const preferredKeys = [
             'deploy_ssl_url', 'deploy_url', 'deployUrl', 'deployURL',
             'ssl_url', 'sslUrl', 'site_url', 'siteUrl', 'url'
@@ -49,14 +63,16 @@ jobs:
               break;
             }
           }
-          function inspect(value) {
-            if (url) return;
+          function inspect(value, key = '') {
+            if (url || /claim/i.test(key)) return;
             if (typeof value === 'string' && /^https?:\/\//.test(value) && value.includes('netlify')) {
               url = value;
               return;
             }
-            if (Array.isArray(value)) value.forEach(inspect);
-            else if (value && typeof value === 'object') Object.values(value).forEach(inspect);
+            if (Array.isArray(value)) value.forEach((entry) => inspect(entry));
+            else if (value && typeof value === 'object') {
+              Object.entries(value).forEach(([childKey, childValue]) => inspect(childValue, childKey));
+            }
           }
           inspect(result);
           if (!url) throw new Error('Netlify did not return a discoverable preview URL');
@@ -69,15 +85,24 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/live-checks
+          USER_AGENT='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/150.0.0.0 Safari/537.36'
 
           fetch_page() {
             local path="$1"
             local output="$2"
+            local headers="${output}.headers"
             echo "Checking $path"
             local code
-            code="$(curl --retry 10 --retry-delay 2 --retry-all-errors -sS -L -o "$output" -w '%{http_code}' "$PREVIEW_URL$path")"
+            code="$(curl --retry 10 --retry-delay 2 --retry-all-errors -sS -L -A "$USER_AGENT" -D "$headers" -o "$output" -w '%{http_code}' "$PREVIEW_URL$path")"
             echo "$path -> HTTP $code"
-            test "$code" = "200"
+            if [ "$code" != "200" ]; then
+              echo 'Response headers:'
+              sed -n '1,40p' "$headers"
+              echo 'Response body preview:'
+              head -c 1000 "$output" || true
+              echo
+              return 1
+            fi
             test -s "$output"
           }
 
@@ -109,9 +134,9 @@ jobs:
           }
           NODE
 
-          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PREVIEW_URL/admin/" | tr -d '\r' > /tmp/live-checks/admin.headers
-          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PREVIEW_URL/" | tr -d '\r' > /tmp/live-checks/home.headers
-          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PREVIEW_URL/admin/config.yml" | tr -d '\r' > /tmp/live-checks/config.headers
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI -A "$USER_AGENT" "$PREVIEW_URL/admin/" | tr -d '\r' > /tmp/live-checks/admin.headers
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI -A "$USER_AGENT" "$PREVIEW_URL/" | tr -d '\r' > /tmp/live-checks/home.headers
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI -A "$USER_AGENT" "$PREVIEW_URL/admin/config.yml" | tr -d '\r' > /tmp/live-checks/config.headers
 
           grep -qi '^x-robots-tag: noindex, nofollow' /tmp/live-checks/admin.headers
           grep -qi '^x-content-type-options: nosniff' /tmp/live-checks/home.headers
