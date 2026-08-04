@@ -1,0 +1,96 @@
+name: Netlify preview
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: abidingplace-netlify-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Verify preview artifacts
+        run: |
+          test -f public/index.html
+          test -f public/admin/index.html
+          test -f public/admin/config.yml
+          test -f public/admin/help.html
+          test -f public/content/site-data.json
+      - name: Create temporary live Netlify preview
+        run: |
+          npx --yes netlify-cli@latest deploy \
+            --allow-anonymous \
+            --dir=public \
+            --json > /tmp/netlify-preview.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const result = JSON.parse(fs.readFileSync('/tmp/netlify-preview.json', 'utf8'));
+          const preferredKeys = [
+            'deploy_ssl_url', 'deploy_url', 'deployUrl', 'deployURL',
+            'ssl_url', 'sslUrl', 'site_url', 'siteUrl', 'url'
+          ];
+          let url;
+          for (const key of preferredKeys) {
+            if (typeof result[key] === 'string' && result[key].includes('netlify')) {
+              url = result[key];
+              break;
+            }
+          }
+          function inspect(value) {
+            if (url) return;
+            if (typeof value === 'string' && /^https?:\/\//.test(value) && value.includes('netlify')) {
+              url = value;
+              return;
+            }
+            if (Array.isArray(value)) value.forEach(inspect);
+            else if (value && typeof value === 'object') Object.values(value).forEach(inspect);
+          }
+          inspect(result);
+          if (!url) throw new Error('Netlify did not return a discoverable preview URL');
+          url = url.replace(/^http:/, 'https:').replace(/\/$/, '');
+          fs.appendFileSync(process.env.GITHUB_ENV, `PREVIEW_URL=${url}\n`);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Temporary Netlify preview\n\n${url}\n`);
+          console.log(`Temporary preview URL: ${url}`);
+          NODE
+      - name: Verify live pages, CMS assets, redirects, and headers
+        run: |
+          set -euo pipefail
+          for path in / /about.html /ministries.html /events.html /contact.html /admin/ /admin/help.html /admin/config.yml /content/site-data.json; do
+            code="$(curl -sS -L -o /tmp/response -w '%{http_code}' "$PREVIEW_URL$path")"
+            test "$code" = "200"
+            test -s /tmp/response
+          done
+
+          curl -fsSL "$PREVIEW_URL/" | grep -q 'Welcome to Abiding Place'
+          curl -fsSL "$PREVIEW_URL/events.html" | grep -q 'Regular Weekly Gatherings'
+          curl -fsSL "$PREVIEW_URL/contact.html" | grep -q 'Mel Lloyd Centre'
+          curl -fsSL "$PREVIEW_URL/admin/" | grep -q 'Content Editor'
+          curl -fsSL "$PREVIEW_URL/admin/help.html" | grep -q 'Website Editor Help'
+          curl -fsSL "$PREVIEW_URL/admin/config.yml" | grep -q 'name: git-gateway'
+          curl -fsSL "$PREVIEW_URL/admin/config.yml" | grep -q 'https://abidingplace.netlify.app'
+          curl -fsSL "$PREVIEW_URL/content/site-data.json" | node -e '
+            let body = "";
+            process.stdin.on("data", chunk => body += chunk);
+            process.stdin.on("end", () => {
+              const data = JSON.parse(body);
+              if (!data.contact || data.contact.venue !== "Mel Lloyd Centre") process.exit(1);
+              if (!Array.isArray(data.gatherings) || data.gatherings.length < 3) process.exit(1);
+            });
+          '
+
+          curl -fsSI "$PREVIEW_URL/admin/" | tr -d '\r' | grep -qi '^x-robots-tag: noindex, nofollow'
+          curl -fsSI "$PREVIEW_URL/" | tr -d '\r' | grep -qi '^x-content-type-options: nosniff'
+          curl -fsSI "$PREVIEW_URL/admin/config.yml" | tr -d '\r' | grep -qi '^cache-control: no-cache'
