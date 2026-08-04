@@ -68,29 +68,53 @@ jobs:
       - name: Verify live pages, CMS assets, redirects, and headers
         run: |
           set -euo pipefail
-          for path in / /about.html /ministries.html /events.html /contact.html /admin/ /admin/help.html /admin/config.yml /content/site-data.json; do
-            code="$(curl -sS -L -o /tmp/response -w '%{http_code}' "$PREVIEW_URL$path")"
+          mkdir -p /tmp/live-checks
+
+          fetch_page() {
+            local path="$1"
+            local output="$2"
+            echo "Checking $path"
+            local code
+            code="$(curl --retry 10 --retry-delay 2 --retry-all-errors -sS -L -o "$output" -w '%{http_code}' "$PREVIEW_URL$path")"
+            echo "$path -> HTTP $code"
             test "$code" = "200"
-            test -s /tmp/response
-          done
+            test -s "$output"
+          }
 
-          curl -fsSL "$PREVIEW_URL/" | grep -q 'Welcome to Abiding Place'
-          curl -fsSL "$PREVIEW_URL/events.html" | grep -q 'Regular Weekly Gatherings'
-          curl -fsSL "$PREVIEW_URL/contact.html" | grep -q 'Mel Lloyd Centre'
-          curl -fsSL "$PREVIEW_URL/admin/" | grep -q 'Content Editor'
-          curl -fsSL "$PREVIEW_URL/admin/help.html" | grep -q 'Website Editor Help'
-          curl -fsSL "$PREVIEW_URL/admin/config.yml" | grep -q 'name: git-gateway'
-          curl -fsSL "$PREVIEW_URL/admin/config.yml" | grep -q 'https://abidingplace.netlify.app'
-          curl -fsSL "$PREVIEW_URL/content/site-data.json" | node -e '
-            let body = "";
-            process.stdin.on("data", chunk => body += chunk);
-            process.stdin.on("end", () => {
-              const data = JSON.parse(body);
-              if (!data.contact || data.contact.venue !== "Mel Lloyd Centre") process.exit(1);
-              if (!Array.isArray(data.gatherings) || data.gatherings.length < 3) process.exit(1);
-            });
-          '
+          fetch_page / /tmp/live-checks/home.html
+          fetch_page /about.html /tmp/live-checks/about.html
+          fetch_page /ministries.html /tmp/live-checks/ministries.html
+          fetch_page /events.html /tmp/live-checks/events.html
+          fetch_page /contact.html /tmp/live-checks/contact.html
+          fetch_page /admin/ /tmp/live-checks/admin.html
+          fetch_page /admin/help.html /tmp/live-checks/help.html
+          fetch_page /admin/config.yml /tmp/live-checks/config.yml
+          fetch_page /content/site-data.json /tmp/live-checks/site-data.json
 
-          curl -fsSI "$PREVIEW_URL/admin/" | tr -d '\r' | grep -qi '^x-robots-tag: noindex, nofollow'
-          curl -fsSI "$PREVIEW_URL/" | tr -d '\r' | grep -qi '^x-content-type-options: nosniff'
-          curl -fsSI "$PREVIEW_URL/admin/config.yml" | tr -d '\r' | grep -qi '^cache-control: no-cache'
+          grep -q 'Welcome to Abiding Place' /tmp/live-checks/home.html
+          grep -q 'Regular Weekly Gatherings' /tmp/live-checks/events.html
+          grep -q 'Mel Lloyd Centre' /tmp/live-checks/contact.html
+          grep -q 'Content Editor' /tmp/live-checks/admin.html
+          grep -q 'Website Editor Help' /tmp/live-checks/help.html
+          grep -q 'name: git-gateway' /tmp/live-checks/config.yml
+          grep -q 'https://abidingplace.netlify.app' /tmp/live-checks/config.yml
+
+          node - <<'NODE'
+          const data = require('/tmp/live-checks/site-data.json');
+          if (!data.contact || data.contact.venue !== 'Mel Lloyd Centre') {
+            throw new Error('Generated contact venue is incorrect');
+          }
+          if (!Array.isArray(data.gatherings) || data.gatherings.length < 3) {
+            throw new Error('Generated weekly gatherings are incomplete');
+          }
+          NODE
+
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PREVIEW_URL/admin/" | tr -d '\r' > /tmp/live-checks/admin.headers
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PREVIEW_URL/" | tr -d '\r' > /tmp/live-checks/home.headers
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PREVIEW_URL/admin/config.yml" | tr -d '\r' > /tmp/live-checks/config.headers
+
+          grep -qi '^x-robots-tag: noindex, nofollow' /tmp/live-checks/admin.headers
+          grep -qi '^x-content-type-options: nosniff' /tmp/live-checks/home.headers
+          grep -qi '^cache-control: no-cache' /tmp/live-checks/config.headers
+
+          echo 'All live Netlify preview checks passed.'
