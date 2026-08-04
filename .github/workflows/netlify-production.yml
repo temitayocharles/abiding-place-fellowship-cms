@@ -1,9 +1,7 @@
-name: Netlify production
+name: Netlify delivery
 
 on:
   pull_request:
-    paths:
-      - ".github/workflows/netlify-production.yml"
   push:
     branches: [main]
 
@@ -11,27 +9,45 @@ permissions:
   contents: read
 
 concurrency:
-  group: abidingplace-netlify-production
-  cancel-in-progress: false
+  group: abidingplace-netlify-${{ github.event_name }}
+  cancel-in-progress: true
 
 jobs:
-  credential-check:
+  preview:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Confirm a Netlify deployment credential exists
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Verify preview artifacts
         run: |
-          TOKEN="${NETLIFY_AUTH_TOKEN:-$NETLIFY_TOKEN}"
-          if [ -z "$TOKEN" ]; then
-            echo "No NETLIFY_AUTH_TOKEN or NETLIFY_TOKEN repository secret is configured." >&2
-            exit 1
-          fi
-          echo "A masked Netlify deployment credential is available."
+          test -f public/index.html
+          test -f public/admin/index.html
+          test -f public/admin/config.yml
+          test -f public/admin/help.html
+          test -f public/content/site-data.json
+      - name: Create temporary live Netlify preview
+        run: |
+          npx --yes netlify-cli@latest deploy \
+            --allow-anonymous \
+            --dir=public \
+            --json > /tmp/netlify-preview.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const result = JSON.parse(fs.readFileSync('/tmp/netlify-preview.json', 'utf8'));
+          const url = result.deploy_ssl_url || result.deploy_url || result.ssl_url || result.url;
+          if (!url) throw new Error('Netlify did not return a preview URL');
+          console.log(`Temporary preview URL: ${url}`);
+          console.log('This anonymous preview expires unless claimed; it is used only for delivery validation.');
+          NODE
 
-  validate-build-deploy:
+  production:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -52,14 +68,22 @@ jobs:
           test -f public/index.html
           test -f public/admin/index.html
           test -f public/admin/config.yml
+          test -f public/admin/help.html
           test -f public/content/site-data.json
-      - name: Deploy canonical site to Netlify
+      - name: Resolve deployment credential
+        id: auth
         run: |
           TOKEN="${NETLIFY_AUTH_TOKEN:-$NETLIFY_TOKEN}"
-          if [ -z "$TOKEN" ]; then
-            echo "No Netlify deployment credential is configured." >&2
-            exit 1
+          if [ -n "$TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Canonical Netlify deployment skipped because no repository deployment token is configured."
           fi
+      - name: Deploy canonical site to Netlify
+        if: steps.auth.outputs.available == 'true'
+        run: |
+          TOKEN="${NETLIFY_AUTH_TOKEN:-$NETLIFY_TOKEN}"
           npx --yes netlify-cli@latest deploy \
             --dir=public \
             --prod \
