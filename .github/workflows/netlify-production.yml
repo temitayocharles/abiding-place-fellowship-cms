@@ -1,0 +1,68 @@
+name: Netlify production
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/netlify-production.yml"
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: abidingplace-netlify-production
+  cancel-in-progress: false
+
+jobs:
+  credential-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm a Netlify deployment credential exists
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        run: |
+          TOKEN="${NETLIFY_AUTH_TOKEN:-$NETLIFY_TOKEN}"
+          if [ -z "$TOKEN" ]; then
+            echo "No NETLIFY_AUTH_TOKEN or NETLIFY_TOKEN repository secret is configured." >&2
+            exit 1
+          fi
+          echo "A masked Netlify deployment credential is available."
+
+  validate-build-deploy:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NETLIFY_SITE_ID: 85526be1-1a57-48eb-a6ec-795115effb8b
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Verify production artifacts
+        run: |
+          test -f public/index.html
+          test -f public/admin/index.html
+          test -f public/admin/config.yml
+          test -f public/content/site-data.json
+      - name: Deploy canonical site to Netlify
+        run: |
+          TOKEN="${NETLIFY_AUTH_TOKEN:-$NETLIFY_TOKEN}"
+          if [ -z "$TOKEN" ]; then
+            echo "No Netlify deployment credential is configured." >&2
+            exit 1
+          fi
+          npx --yes netlify-cli@latest deploy \
+            --dir=public \
+            --prod \
+            --site="$NETLIFY_SITE_ID" \
+            --auth="$TOKEN" \
+            --message="GitHub ${GITHUB_SHA}"
