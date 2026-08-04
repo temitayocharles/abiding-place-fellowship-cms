@@ -27,3 +27,15 @@ jobs:
           test -f public/content/site-data.json
           grep -q 'abidingplace.netlify.app' public/admin/config.yml
           grep -q 'Current Announcements' public/events.html || true
+      - name: Confirm Netlify deployment credential
+        if: github.event_name == 'pull_request'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+        run: |
+          TOKEN="${NETLIFY_AUTH_TOKEN:-$NETLIFY_TOKEN}"
+          if [ -z "$TOKEN" ]; then
+            echo "No NETLIFY_AUTH_TOKEN or NETLIFY_TOKEN repository secret is configured." >&2
+            exit 1
+          fi
+          echo "A masked Netlify deployment credential is available."
