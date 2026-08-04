@@ -1,113 +1,158 @@
-# Decap CMS Configuration — Abiding Place Fellowship
-# Simplified for pastors and non-technical users 💚
-
 backend:
   name: git-gateway
   branch: main
 
+site_url: "https://abidingplace.netlify.app"
+display_url: "https://abidingplace.netlify.app"
+logo_url: "/images/interior/abiding-place-building.jpg"
+
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
-site_url: "https://abiding-place-ministries-cms.netlify.app"
-display_url: "https://abiding-place-ministries-cms.netlify.app"
-
-publish_mode: editorial_workflow
-
 commit_messages:
-  create: "✨ Create {{collection}} — {{slug}}"
-  update: "📝 Update {{collection}} — {{slug}}"
-  delete: "🗑️ Delete {{collection}} — {{slug}}"
-  uploadMedia: "📸 Upload media — {{path}}"
-  deleteMedia: "🗑️ Delete media — {{path}}"
+  create: "CMS: add {{collection}} {{slug}}"
+  update: "CMS: update {{collection}} {{slug}}"
+  delete: "CMS: remove {{collection}} {{slug}}"
+  uploadMedia: "CMS: upload {{path}}"
+  deleteMedia: "CMS: remove media {{path}}"
 
 collections:
-  # ─────────────────────────────────────────────
-  # 1. Leadership Team
-  # ─────────────────────────────────────────────
-  - name: "leadership"
+  - name: "church_updates"
+    label: "Church Updates"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "announcements"
+        label: "Announcements and Special Events"
+        file: "content/site/announcements.yaml"
+        description: "Add only confirmed announcements. Turn Published off to hide an item without deleting it."
+        fields:
+          - name: "announcements"
+            label: "Current announcements"
+            widget: "list"
+            collapsed: false
+            summary: "{{fields.title}} — {{fields.date}}"
+            fields:
+              - { name: "title", label: "Title", widget: "string" }
+              - { name: "date", label: "Date", widget: "datetime", date_format: "MMMM D, YYYY", time_format: false, required: false }
+              - { name: "time", label: "Time", widget: "string", required: false, hint: "Example: 10:00 AM" }
+              - { name: "location", label: "Location", widget: "string", required: false }
+              - { name: "description", label: "Description", widget: "text" }
+              - { name: "published", label: "Published", widget: "boolean", default: true }
+
+  - name: "weekly_schedule"
+    label: "Weekly Schedule"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "weekly_gatherings"
+        label: "Regular Worship and Bible Studies"
+        file: "content/site/weekly-gatherings.yaml"
+        description: "Update regular meeting days, times and locations. Confirm changes before publishing."
+        fields:
+          - name: "gatherings"
+            label: "Weekly gatherings"
+            widget: "list"
+            collapsed: false
+            summary: "{{fields.day}} — {{fields.name}} — {{fields.time}}"
+            fields:
+              - { name: "name", label: "Gathering name", widget: "string" }
+              - { name: "day", label: "Day", widget: "select", options: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] }
+              - { name: "time", label: "Time", widget: "string", hint: "Example: 10:00 AM" }
+              - { name: "venue", label: "Venue", widget: "string" }
+              - { name: "entrance", label: "Entrance or room", widget: "string", required: false }
+              - { name: "current_topic", label: "Current study topic", widget: "string", required: false, hint: "Leave blank when not confirmed" }
+              - { name: "status", label: "Verification note", widget: "hidden", required: false }
+          - { name: "editor_note", label: "Internal reminder", widget: "text", required: false }
+
+  - name: "leadership_content"
     label: "Leadership"
-    label_singular: "Leader"
-    folder: "content/team"
-    create: true
-    delete: true
-    slug: "{{slug}}"
-    summary: "{{name}} — {{role}}"
-    fields:
-      - { name: "name", label: "Name", widget: "string", required: true }
-      - { name: "role", label: "Role", widget: "string", required: true }
-      - { name: "bio", label: "Bio", widget: "text", required: true }
-      - { name: "photo", label: "Photo", widget: "image", required: false }
-      - { name: "display_order", label: "Display Order", widget: "number", required: false, default: 99 }
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "leadership"
+        label: "Leadership Profiles"
+        file: "content/site/leadership.yaml"
+        fields:
+          - name: "leadership"
+            label: "People and teams"
+            widget: "list"
+            collapsed: false
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { name: "name", label: "Name", widget: "string" }
+              - { name: "role", label: "Role", widget: "string" }
+              - { name: "bio", label: "Biography", widget: "text" }
+              - { name: "photo", label: "Photo", widget: "image", required: false }
+              - { name: "verified", label: "Approved for publication", widget: "boolean", default: true }
+          - name: "prohibited_without_confirmation"
+            label: "Internal publication cautions"
+            widget: "list"
+            required: false
+            field: { name: "item", label: "Caution", widget: "string" }
 
-  # ─────────────────────────────────────────────
-  # 2. Events
-  # ─────────────────────────────────────────────
-  - name: "events"
-    label: "Events"
-    label_singular: "Event"
-    folder: "content/events"
-    create: true
-    delete: true
-    slug: "{{slug}}"
-    summary: "{{title}} — {{date}}"
-    fields:
-      - { name: "title", label: "Event Title", widget: "string", required: true }
-      - { name: "date", label: "Date & Time", widget: "datetime", required: true }
-      - { name: "location", label: "Location", widget: "string", required: true }
-      - { name: "description", label: "Description", widget: "text", required: true }
-      - { name: "featured_image", label: "Featured Image", widget: "image", required: false }
-
-  # ─────────────────────────────────────────────
-  # 3. Ministries
-  # ─────────────────────────────────────────────
-  - name: "ministries"
+  - name: "ministry_content"
     label: "Ministries"
-    label_singular: "Ministry"
-    folder: "content/ministries"
-    create: true
-    delete: true
-    slug: "{{slug}}"
-    summary: "{{name}} — {{leader}}"
-    fields:
-      - { name: "name", label: "Ministry Name", widget: "string", required: true }
-      - { name: "leader", label: "Leader", widget: "string", required: true }
-      - { name: "description", label: "Description", widget: "text", required: true }
-      - name: "meeting_day"
-        label: "Meeting Day"
-        widget: "select"
-        required: false
-        options:
-          - { label: "Sunday", value: "Sunday" }
-          - { label: "Tuesday", value: "Tuesday" }
-          - { label: "Wednesday", value: "Wednesday" }
-          - { label: "Other", value: "Other" }
-        default: "Sunday"
-      - { name: "meeting_time", label: "Meeting Time", widget: "string", required: false }
-      - { name: "photo", label: "Photo", widget: "image", required: false }
-      - { name: "is_active", label: "Is Active", widget: "boolean", required: false, default: true }
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "ministries"
+        label: "Ministry Information"
+        file: "content/site/ministries.yaml"
+        fields:
+          - { name: "source", label: "Source reference", widget: "hidden", required: false }
+          - name: "ministries"
+            label: "Ministries"
+            widget: "list"
+            collapsed: false
+            summary: "{{fields.name}}"
+            fields:
+              - { name: "name", label: "Ministry name", widget: "string" }
+              - { name: "summary", label: "Description", widget: "text" }
+              - { name: "photo", label: "Photo", widget: "image", required: false }
+              - { name: "current_schedule", label: "Current schedule", widget: "string", required: false }
+          - name: "unsupported_claims_removed"
+            label: "Internal publication cautions"
+            widget: "list"
+            required: false
+            field: { name: "item", label: "Caution", widget: "string" }
 
-  # ─────────────────────────────────────────────
-  # 4. Contact Info (single file)
-  # ─────────────────────────────────────────────
-  - name: "contact_info"
-    label: "Contact Info"
+  - name: "contact_and_site"
+    label: "Contact and Site Details"
     delete: false
     editor:
       preview: false
     files:
       - name: "contact"
-        label: "Contact Info"
+        label: "Contact Information"
         file: "config/contact.yaml"
         fields:
-          - { name: "phone", label: "Phone", widget: "string", required: true }
-          - { name: "mobile_phone", label: "Mobile Phone", widget: "string", required: false }
-          - { name: "email", label: "Email", widget: "string", required: true }
-          - { name: "address", label: "Address", widget: "string", required: true }
+          - { name: "phone", label: "Main phone", widget: "string" }
+          - { name: "cell", label: "Mobile phone", widget: "string", required: false }
+          - { name: "email", label: "Email", widget: "string" }
+          - { name: "venue", label: "Venue", widget: "string" }
+          - { name: "address", label: "Address", widget: "string" }
+          - { name: "entrance", label: "Entrance instructions", widget: "string" }
           - name: "service_times"
-            label: "Service Times"
+            label: "Footer service times"
             widget: "list"
-            summary: "{{day}} — {{time}}"
+            collapsed: false
+            summary: "{{fields.day}} — {{fields.time}}"
             fields:
-              - { name: "day", label: "Day", widget: "string", required: true }
-              - { name: "time", label: "Time", widget: "string", required: true }
-              - { name: "type", label: "Type", widget: "string", required: true }
+              - { name: "day", label: "Day", widget: "string" }
+              - { name: "time", label: "Time", widget: "string" }
+              - { name: "name", label: "Gathering", widget: "string" }
+          - { name: "editor_notes", label: "Internal reminder", widget: "text", required: false }
+      - name: "site"
+        label: "Basic Site Information"
+        file: "config/site.yaml"
+        fields:
+          - { name: "name", label: "Church name", widget: "string" }
+          - { name: "description", label: "Short description", widget: "text" }
+          - { name: "founded", label: "Founded", widget: "number" }
+          - { name: "official_legacy_site", label: "Previous website", widget: "string", required: false }
+          - { name: "email", label: "General email", widget: "string" }

@@ -1,0 +1,29 @@
+name: Site quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Verify delivery artifacts
+        run: |
+          test -f public/admin/index.html
+          test -f public/admin/config.yml
+          test -f public/content/site-data.json
+          grep -q 'abidingplace.netlify.app' public/admin/config.yml
+          grep -q 'Current Announcements' public/events.html || true
