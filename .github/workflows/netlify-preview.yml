@@ -31,6 +31,8 @@ jobs:
           test -f public/manage.html
           test ! -f public/admin.html
           test -f public/content/site-data.json
+          test -f public/_headers
+          test -f public/_redirects
       - name: Create temporary live Netlify preview
         run: |
           npx --yes netlify-cli@latest deploy \
