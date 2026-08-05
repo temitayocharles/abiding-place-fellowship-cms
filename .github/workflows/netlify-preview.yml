@@ -28,6 +28,8 @@ jobs:
           test -f public/admin/index.html
           test -f public/admin/config.yml
           test -f public/admin/help.html
+          test -f public/manage.html
+          test ! -f public/admin.html
           test -f public/content/site-data.json
       - name: Create temporary live Netlify preview
         run: |
@@ -73,6 +75,7 @@ jobs:
             ['/contact.html', 'Mel Lloyd Centre'],
             ['/admin/', 'Content Editor · Abiding Place Fellowship'],
             ['/admin/help.html', 'Website Editor Help'],
+            ['/manage.html', 'Website Administration · Abiding Place Fellowship'],
             ['/admin/config.yml', 'name: git-gateway'],
             ['/content/site-data.json', 'Mel Lloyd Centre'],
           ];
