@@ -20,7 +20,8 @@ if (!fs.existsSync(managementDashboard)) {
 }
 
 const redirects = [
-  '/admin /admin/ 301!',
+  '/admin /admin/index.html 200!',
+  '/admin/ /admin/index.html 200!',
   '/admin.html /admin/ 301!',
   '/editor.html /admin/ 301!',
   '/manage /manage.html 301!',
@@ -33,6 +34,10 @@ const headers = [
   '  X-Frame-Options: SAMEORIGIN',
   '  Referrer-Policy: strict-origin-when-cross-origin',
   '  Permissions-Policy: camera=(), microphone=(), geolocation=()',
+  '',
+  '/admin',
+  '  X-Robots-Tag: noindex, nofollow',
+  '  Cache-Control: no-store',
   '',
   '/admin/',
   '  X-Robots-Tag: noindex, nofollow',

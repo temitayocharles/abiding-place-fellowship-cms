@@ -54,7 +54,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Protected temporary Netlify preview\n\n${url}\n`);
           console.log(`Protected temporary preview created: ${url}`);
           NODE
-      - name: Verify authenticated live pages, CMS assets, and headers
+      - name: Verify authenticated live pages and CMS assets
         run: |
           npm install --no-save --ignore-scripts playwright-core@latest
           CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
@@ -64,3 +64,10 @@ jobs:
           fi
           export CHROME_PATH
           node scripts/validate-live-preview.js
+      - name: Upload verified production build
+        uses: actions/upload-artifact@v4
+        with:
+          name: abidingplace-public
+          path: public
+          if-no-files-found: error
+          retention-days: 3
