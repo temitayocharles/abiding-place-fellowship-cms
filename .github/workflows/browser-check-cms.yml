@@ -1,0 +1,57 @@
+name: Browser-check production CMS
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts playwright-core@latest
+      - name: Inspect live CMS browser behavior
+        run: |
+          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "$CHROME_PATH"
+          export CHROME_PATH
+          node <<'NODE'
+          const { chromium } = require('playwright-core');
+          (async () => {
+            const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH, args:['--no-sandbox']});
+            const page = await browser.newPage();
+            const errors=[]; const failed=[];
+            page.on('console', m => { if (m.type()==='error') errors.push(m.text()); });
+            page.on('pageerror', e => errors.push(String(e)));
+            page.on('requestfailed', r => failed.push(`${r.url()} :: ${r.failure()?.errorText}`));
+            const response = await page.goto('https://abidingplace.netlify.app/admin/', {waitUntil:'domcontentloaded', timeout:30000});
+            await page.waitForTimeout(12000);
+            console.log('status', response?.status());
+            console.log('title', await page.title());
+            console.log('url', page.url());
+            console.log('body', (await page.locator('body').innerText()).slice(0,3000));
+            console.log('root children', await page.locator('#root').locator(':scope > *').count());
+            console.log('identity api', await page.evaluate(() => !!window.netlifyIdentity));
+            console.log('cms api', await page.evaluate(() => !!window.CMS));
+            console.log('errors', JSON.stringify(errors));
+            console.log('failed', JSON.stringify(failed));
+            await page.screenshot({path:'cms.png', fullPage:true});
+            if (response?.status() !== 200) throw new Error('CMS page did not return 200');
+            if (!(await page.evaluate(() => !!window.netlifyIdentity))) throw new Error('Identity widget did not load');
+            if (!(await page.evaluate(() => !!window.CMS))) throw new Error('Decap CMS did not load');
+            if ((await page.locator('#root').locator(':scope > *').count()) === 0) throw new Error('CMS root remained empty');
+            await browser.close();
+          })().catch(e => { console.error(e); process.exit(1); });
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cms-browser-screenshot
+          path: cms.png
+          if-no-files-found: ignore
+          retention-days: 1
