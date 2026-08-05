@@ -76,3 +76,40 @@ jobs:
           npx -y @netlify/mcp@latest \
             --site-id 85526be1-1a57-48eb-a6ec-795115effb8b \
             --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..TWTwis4mtwEZWhAf.TYp4Ed9Snl2QuM5HOCF7IObs1LoMF6SaYqFXBBGpNDaPn1Wr02UUVMCt_fN0ycrbcY86n11VSIWZoCvkQiuFzky625tSD8JffrncnkVg8xkFs1Rqxl5xmJtRu1XFps7tJK63DvgXZPqcRij1aWaEd3U36E-N9fa_xijKegloT-GzHE3KBpQdiJ84p8Tol40zCG_VxayYjSIvSZZt4mCr4MF_6Bjwc8_Crj10AfplCl38aiYL3Q_vCYphqQEwyoSzDXH1jEI5zZRNxSscRVH5XdkAPVLN_X5zNlETPrH9UajzMkOIdIG_tUyd9HYuUWr4aEm-3mVe0TkhStjHHAvCE1FnQJAP-IwnhKCfzSuB6gvxf5hlRWabU11AVkRL8xoo5LuD1c2s.0mA6lGGbF_yXO5hgJm_fMA"
+      - name: Verify canonical production routes, content, headers, and CMS authentication service
+        run: |
+          set -euo pipefail
+          BASE='https://abidingplace.netlify.app'
+          check_body() {
+            path="$1"; expected="$2"
+            code="$(curl --retry 10 --retry-delay 2 --retry-all-errors -sS -L -o /tmp/body -w '%{http_code}' "$BASE$path")"
+            echo "$path -> HTTP $code"
+            test "$code" = '200'
+            grep -Fq "$expected" /tmp/body
+          }
+          check_body '/' 'Welcome to Abiding Place'
+          check_body '/about.html' 'Our Story, Leadership and Faith'
+          check_body '/ministries.html' 'Ministries Rooted in Relationship'
+          check_body '/events.html' 'Regular Weekly Gatherings'
+          check_body '/contact.html' 'Mel Lloyd Centre'
+          check_body '/admin/' 'Content Editor · Abiding Place Fellowship'
+          check_body '/admin/help.html' 'Website Editor Help'
+          check_body '/manage.html' 'Website Administration · Abiding Place Fellowship'
+          check_body '/admin/config.yml' 'name: git-gateway'
+          check_body '/content/site-data.json' 'Mel Lloyd Centre'
+
+          curl -fsSI "$BASE/admin/" | tr -d '\r' > /tmp/admin.headers
+          curl -fsSI "$BASE/" | tr -d '\r' > /tmp/home.headers
+          curl -fsSI "$BASE/admin/config.yml" | tr -d '\r' > /tmp/config.headers
+          grep -qi '^x-robots-tag:.*noindex' /tmp/admin.headers
+          grep -qi '^x-content-type-options: *nosniff' /tmp/home.headers
+          grep -Eqi '^cache-control:.*(no-store|no-cache)' /tmp/config.headers
+
+          test "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/admin")" = '301'
+          test "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/editor.html")" = '301'
+
+          identity_code="$(curl -sS -o /tmp/identity.json -w '%{http_code}' "$BASE/.netlify/identity/settings")"
+          echo "Netlify Identity settings -> HTTP $identity_code"
+          cat /tmp/identity.json
+          test "$identity_code" = '200'
+          grep -Eq '"external"|"disable_signup"|"site_url"' /tmp/identity.json
