@@ -5,17 +5,25 @@
   "main": "scripts/build.js",
   "scripts": {
     "build": "node scripts/build.js && node scripts/finalize-output.js",
+    "build:tina": "tinacms build",
+    "build:vercel": "npm run build && npm run build:tina",
     "dev": "npx http-server public -p 8080",
+    "dev:tina": "npm run build && tinacms dev -c \"http-server public -p 8080\"",
     "validate": "node scripts/validate-content.js",
     "capture-screenshots": "node scripts/capture-screenshots.js",
     "test": "npm run validate && npm run build"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "http-server": "^14.1.1",
     "marked": "^9.1.0",
+    "tinacms": "3.11.0",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
+    "@tinacms/cli": "2.5.6",
     "playwright": "^1.61.1"
   }
 }
