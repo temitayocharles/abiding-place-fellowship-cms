@@ -37,6 +37,8 @@ jobs:
           test -f public/manage.html
           test ! -f public/admin.html
           test -f public/content/site-data.json
+          test -f public/_headers
+          test -f public/_redirects
       - name: Resolve deployment credential
         id: auth
         run: |
