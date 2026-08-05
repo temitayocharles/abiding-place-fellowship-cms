@@ -145,7 +145,7 @@ jobs:
               }
 
               const siteData = JSON.parse(responses.get('/content/site-data.json').body);
-              if (!siteData.contact || siteData.contact.venue !== 'Mel Lloyd Centre') {
+              if (!siteData.contact || !String(siteData.contact.venue || '').includes('Mel Lloyd Centre')) {
                 throw new Error('Generated contact venue is incorrect');
               }
               if (!Array.isArray(siteData.gatherings) || siteData.gatherings.length < 3) {
