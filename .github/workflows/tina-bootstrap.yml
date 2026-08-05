@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feature/tinacms-migration
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -20,7 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies and update package lock
         run: npm install --ignore-scripts
