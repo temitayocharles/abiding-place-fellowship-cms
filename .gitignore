@@ -1,10 +1,12 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Build output
 public/
 dist/
+
+# Tina generated client files (tina-lock.json is intentionally tracked)
+tina/__generated__/
 
 # Logs
 *.log
