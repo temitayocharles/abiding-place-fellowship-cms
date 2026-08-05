@@ -33,6 +33,13 @@ jobs:
           test -f public/content/site-data.json
           test -f public/_headers
           test -f public/_redirects
+      - name: Upload verified production build
+        uses: actions/upload-artifact@v4
+        with:
+          name: abidingplace-public
+          path: public
+          if-no-files-found: error
+          retention-days: 3
       - name: Create temporary live Netlify preview
         run: |
           npx --yes netlify-cli@latest deploy \
