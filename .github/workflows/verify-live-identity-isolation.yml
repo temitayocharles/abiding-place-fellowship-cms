@@ -1,0 +1,100 @@
+name: Verify live Identity isolation
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --ignore-scripts playwright-core@latest
+      - name: Verify live invitation and normal CMS flows
+        shell: bash
+        run: |
+          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          test -n "$CHROME_PATH"
+          export CHROME_PATH
+          node <<'NODE'
+          const { chromium } = require('playwright-core');
+
+          (async () => {
+            const browser = await chromium.launch({
+              headless: true,
+              executablePath: process.env.CHROME_PATH,
+              args: ['--no-sandbox'],
+            });
+
+            const invitationPage = await browser.newPage();
+            const invitationRequests = [];
+            const invitationErrors = [];
+            invitationPage.on('request', request => invitationRequests.push(request.url()));
+            invitationPage.on('pageerror', error => invitationErrors.push(String(error)));
+            invitationPage.on('console', message => {
+              if (message.type() === 'error') invitationErrors.push(message.text());
+            });
+
+            const invitationResponse = await invitationPage.goto(
+              'https://abidingplace.netlify.app/admin/#invite_token=deliberately-invalid-verification-token',
+              { waitUntil: 'domcontentloaded', timeout: 30000 },
+            );
+            await invitationPage.waitForTimeout(6000);
+
+            const invitationState = {
+              status: invitationResponse?.status(),
+              identity: await invitationPage.evaluate(() => Boolean(window.netlifyIdentity)),
+              cms: await invitationPage.evaluate(() => Boolean(window.CMS)),
+              decapScript: await invitationPage.locator('#decap-cms-script').count(),
+              body: (await invitationPage.locator('body').innerText()).slice(0, 1500),
+              errors: invitationErrors,
+              decapRequests: invitationRequests.filter(url => /decap-cms/i.test(url)),
+            };
+            console.log('invitation state', JSON.stringify(invitationState, null, 2));
+
+            if (invitationState.status !== 200) throw new Error('Invitation page did not return HTTP 200');
+            if (!invitationState.identity) throw new Error('Netlify Identity did not load for invitation flow');
+            if (invitationState.cms) throw new Error('Decap CMS loaded during invitation password setup');
+            if (invitationState.decapScript !== 0) throw new Error('Decap script was injected during invitation password setup');
+            if (invitationState.decapRequests.length !== 0) throw new Error('Browser requested Decap during invitation password setup');
+
+            const normalPage = await browser.newPage();
+            const normalErrors = [];
+            normalPage.on('pageerror', error => normalErrors.push(String(error)));
+            normalPage.on('console', message => {
+              if (message.type() === 'error') normalErrors.push(message.text());
+            });
+
+            const normalResponse = await normalPage.goto(
+              'https://abidingplace.netlify.app/admin/',
+              { waitUntil: 'domcontentloaded', timeout: 30000 },
+            );
+            await normalPage.waitForTimeout(12000);
+
+            const normalState = {
+              status: normalResponse?.status(),
+              identity: await normalPage.evaluate(() => Boolean(window.netlifyIdentity)),
+              cms: await normalPage.evaluate(() => Boolean(window.CMS)),
+              decapScript: await normalPage.locator('#decap-cms-script').count(),
+              body: (await normalPage.locator('body').innerText()).slice(0, 1500),
+              errors: normalErrors,
+            };
+            console.log('normal state', JSON.stringify(normalState, null, 2));
+
+            if (normalState.status !== 200) throw new Error('Normal CMS page did not return HTTP 200');
+            if (!normalState.identity) throw new Error('Netlify Identity did not load on normal CMS page');
+            if (!normalState.cms) throw new Error('Decap CMS did not load on normal CMS page');
+            if (normalState.decapScript !== 1) throw new Error('Normal CMS page did not inject exactly one Decap script');
+
+            await browser.close();
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
