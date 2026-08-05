@@ -75,7 +75,7 @@ jobs:
         run: |
           npx -y @netlify/mcp@latest \
             --site-id 85526be1-1a57-48eb-a6ec-795115effb8b \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..TWTwis4mtwEZWhAf.TYp4Ed9Snl2QuM5HOCF7IObs1LoMF6SaYqFXBBGpNDaPn1Wr02UUVMCt_fN0ycrbcY86n11VSIWZoCvkQiuFzky625tSD8JffrncnkVg8xkFs1Rqxl5xmJtRu1XFps7tJK63DvgXZPqcRij1aWaEd3U36E-N9fa_xijKegloT-GzHE3KBpQdiJ84p8Tol40zCG_VxayYjSIvSZZt4mCr4MF_6Bjwc8_Crj10AfplCl38aiYL3Q_vCYphqQEwyoSzDXH1jEI5zZRNxSscRVH5XdkAPVLN_X5zNlETPrH9UajzMkOIdIG_tUyd9HYuUWr4aEm-3mVe0TkhStjHHAvCE1FnQJAP-IwnhKCfzSuB6gvxf5hlRWabU11AVkRL8xoo5LuD1c2s.0mA6lGGbF_yXO5hgJm_fMA"
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..hfdWNLW7XCbme0Mv.-7W8L0zotHqu7XhHEIX8JfMskM5Daj9_6lc1OIl4AePwhwcEWg712Ivi6-TuT1MSMVtm6dD8vqaDa47NuB3UJ6Vd8bM_wjvkjHGqc0VddGT43JMsxW1V9D4hfAjrW2-TMegOeGXtcXKEEXcq8aPyKWzs-v_i_zdepSw_1UJ_3GNPmt0BtZdBHi57CLmT-uyM84QeWiADBwmTuNVJUC-NbDeclLsH0qloXGT_wGM0Sz1l0eC4l-kRcHWeVU_yoTbbYP3FU_R2JBwzCdTxDxRDsMGi0tPe7wP-jbS2dKWW6njh3I5OJd5gXZPgDpCcdnMwpZN4PyhTXf5atQlP8_MDqUIqPkJvjzW0tDpM7ud7rbGeKRZ9Jq7k1tDhaUXHdz3ITQ41SKTi.DXGyz3h4kJEkMbMj4oaHmA"
       - name: Verify canonical production routes, content, headers, and CMS authentication service
         run: |
           set -euo pipefail
@@ -92,6 +92,7 @@ jobs:
           check_body '/ministries.html' 'Ministries Rooted in Relationship'
           check_body '/events.html' 'Regular Weekly Gatherings'
           check_body '/contact.html' 'Mel Lloyd Centre'
+          check_body '/admin' 'Content Editor · Abiding Place Fellowship'
           check_body '/admin/' 'Content Editor · Abiding Place Fellowship'
           check_body '/admin/help.html' 'Website Editor Help'
           check_body '/manage.html' 'Website Administration · Abiding Place Fellowship'
@@ -105,7 +106,6 @@ jobs:
           grep -qi '^x-content-type-options: *nosniff' /tmp/home.headers
           grep -Eqi '^cache-control:.*(no-store|no-cache)' /tmp/config.headers
 
-          test "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/admin")" = '301'
           test "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/editor.html")" = '301'
 
           identity_code="$(curl -sS -o /tmp/identity.json -w '%{http_code}' "$BASE/.netlify/identity/settings")"
