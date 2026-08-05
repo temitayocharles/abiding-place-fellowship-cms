@@ -67,7 +67,7 @@ jobs:
           const base = process.env.PREVIEW_URL;
           const password = process.env.PREVIEW_PASSWORD;
           const browserPath = process.env.CHROME_PATH;
-          const htmlPages = [
+          const resources = [
             ['/', 'Welcome to Abiding Place'],
             ['/about.html', 'Our Story, Leadership and Faith'],
             ['/ministries.html', 'Ministries Rooted in Relationship'],
@@ -76,8 +76,6 @@ jobs:
             ['/admin/', 'Content Editor · Abiding Place Fellowship'],
             ['/admin/help.html', 'Website Editor Help'],
             ['/manage.html', 'Website Administration · Abiding Place Fellowship'],
-          ];
-          const assets = [
             ['/admin/config.yml', 'name: git-gateway'],
             ['/content/site-data.json', 'Mel Lloyd Centre'],
           ];
@@ -109,25 +107,7 @@ jobs:
               }
 
               const responses = new Map();
-              for (const [path, expectedText] of htmlPages) {
-                const response = await page.goto(`${base}${path}`, {
-                  waitUntil: 'domcontentloaded',
-                  timeout: 30000,
-                });
-                if (!response) throw new Error(`${path} returned no navigation response`);
-                const status = response.status();
-                const body = await response.text();
-                console.log(`${path} -> HTTP ${status}`);
-                if (status !== 200) throw new Error(`${path} returned HTTP ${status}`);
-                if (!body.includes(expectedText)) {
-                  console.log(`${path} response title: ${await page.title()}`);
-                  console.log(`${path} response preview: ${body.slice(0, 500)}`);
-                  throw new Error(`${path} is missing expected content: ${expectedText}`);
-                }
-                responses.set(path, { headers: response.headers(), body });
-              }
-
-              for (const [path, expectedText] of assets) {
+              for (const [path, expectedText] of resources) {
                 const response = await context.request.get(`${base}${path}`, {
                   failOnStatusCode: false,
                   timeout: 30000,
