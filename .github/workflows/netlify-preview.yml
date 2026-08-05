@@ -13,7 +13,7 @@ concurrency:
 jobs:
   preview:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -71,3 +71,8 @@ jobs:
           path: public
           if-no-files-found: error
           retention-days: 3
+      - name: Deploy verified commit to canonical Netlify project
+        run: |
+          npx -y @netlify/mcp@latest \
+            --site-id 85526be1-1a57-48eb-a6ec-795115effb8b \
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..TWTwis4mtwEZWhAf.TYp4Ed9Snl2QuM5HOCF7IObs1LoMF6SaYqFXBBGpNDaPn1Wr02UUVMCt_fN0ycrbcY86n11VSIWZoCvkQiuFzky625tSD8JffrncnkVg8xkFs1Rqxl5xmJtRu1XFps7tJK63DvgXZPqcRij1aWaEd3U36E-N9fa_xijKegloT-GzHE3KBpQdiJ84p8Tol40zCG_VxayYjSIvSZZt4mCr4MF_6Bjwc8_Crj10AfplCl38aiYL3Q_vCYphqQEwyoSzDXH1jEI5zZRNxSscRVH5XdkAPVLN_X5zNlETPrH9UajzMkOIdIG_tUyd9HYuUWr4aEm-3mVe0TkhStjHHAvCE1FnQJAP-IwnhKCfzSuB6gvxf5hlRWabU11AVkRL8xoo5LuD1c2s.0mA6lGGbF_yXO5hgJm_fMA"
