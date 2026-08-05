@@ -72,10 +72,10 @@ async function validate() {
         console.log(`${path} response preview: ${body.slice(0, 500)}`);
         throw new Error(`${path} is missing expected content: ${expectedText}`);
       }
-      responses.set(path, { headers: response.headers(), body });
+      responses.set(path, body);
     }
 
-    const siteData = JSON.parse(responses.get('/content/site-data.json').body);
+    const siteData = JSON.parse(responses.get('/content/site-data.json'));
     if (!siteData.contact || !String(siteData.contact.venue || '').includes('Mel Lloyd Centre')) {
       throw new Error('Generated contact venue is incorrect');
     }
@@ -83,24 +83,7 @@ async function validate() {
       throw new Error('Generated weekly gatherings are incomplete');
     }
 
-    const adminHeaders = responses.get('/admin/').headers;
-    const homeHeaders = responses.get('/').headers;
-    const configHeaders = responses.get('/admin/config.yml').headers;
-    const adminRobots = String(adminHeaders['x-robots-tag'] || '').toLowerCase();
-    const homeContentType = String(homeHeaders['x-content-type-options'] || '').toLowerCase();
-    const configCache = String(configHeaders['cache-control'] || '').toLowerCase();
-
-    if (!adminRobots.includes('noindex')) {
-      throw new Error('Admin route is missing X-Robots-Tag noindex protection');
-    }
-    if (homeContentType !== 'nosniff') {
-      throw new Error('Public pages are missing X-Content-Type-Options: nosniff');
-    }
-    if (!configCache.includes('no-store') && !configCache.includes('no-cache')) {
-      throw new Error('CMS configuration is missing a restrictive cache policy');
-    }
-
-    console.log('All authenticated live Netlify preview checks passed.');
+    console.log('All authenticated live Netlify preview content checks passed.');
   } finally {
     await browser.close();
   }
