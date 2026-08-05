@@ -39,7 +39,7 @@
       var attempts = 0;
       var timer = setInterval(function () {
         attempts += 1;
-        if (document.querySelector('.cms-app-root,.cms-manage-page,.nc-app-root') || attempts > 120) {
+        if (window.CMS || attempts > 30) {
           clearInterval(timer);
           removeLoader();
         }
@@ -61,7 +61,7 @@
         });
       }
       configureIdentity();
-      setTimeout(removeLoader, 15000);
+      setTimeout(removeLoader, 4000);
     });
   </script>
 </body>
