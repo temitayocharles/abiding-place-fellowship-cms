@@ -14,7 +14,7 @@
     "test": "npm run validate && npm run build"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "dependencies": {
     "http-server": "^14.1.1",
