@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <script defer src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <style>
     :root { --primary:#2563EB; --primary-dark:#1E40AF; --bg:#F8FAFC; --text:#0F172A; --body:'DM Sans',sans-serif; --heading:'Space Grotesk',sans-serif; }
     html,body,#root { min-height:100%; margin:0; font-family:var(--body); background:var(--bg); color:var(--text); }
@@ -31,38 +30,70 @@
   </div>
   <a class="ap-help" href="help.html" target="_blank" rel="noopener">Editor Help</a>
   <script>
-    window.addEventListener('DOMContentLoaded', function () {
+    (function () {
+      var identityActionPattern = /(?:invite_token|confirmation_token|recovery_token|email_change_token)=/;
+      var isIdentityAction = identityActionPattern.test(window.location.hash);
+      var cmsLoading = false;
+
       function removeLoader() {
         var loader = document.getElementById('ap-loading');
         if (loader) loader.remove();
       }
-      var attempts = 0;
-      var timer = setInterval(function () {
-        attempts += 1;
-        if (window.CMS || attempts > 30) {
-          clearInterval(timer);
+
+      function loadCms() {
+        if (isIdentityAction || cmsLoading || window.CMS) return;
+        cmsLoading = true;
+        var script = document.createElement('script');
+        script.id = 'decap-cms-script';
+        script.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
+        script.async = true;
+        script.onload = removeLoader;
+        script.onerror = function () {
+          cmsLoading = false;
           removeLoader();
-        }
-      }, 100);
+        };
+        document.body.appendChild(script);
+      }
 
       function configureIdentity() {
         if (!window.netlifyIdentity) {
-          setTimeout(configureIdentity, 100);
+          window.setTimeout(configureIdentity, 100);
           return;
         }
-        window.netlifyIdentity.on('init', function (user) {
-          if (!user && /invite_token|confirmation_token|recovery_token/.test(window.location.hash)) {
+
+        window.netlifyIdentity.on('init', function () {
+          if (isIdentityAction) {
+            removeLoader();
             window.netlifyIdentity.open();
+          } else {
+            loadCms();
           }
         });
+
         window.netlifyIdentity.on('login', function () {
           window.netlifyIdentity.close();
-          window.location.href = '/admin/';
+          window.location.replace('/admin/');
         });
+
+        if (isIdentityAction) {
+          removeLoader();
+          window.netlifyIdentity.open();
+        } else {
+          loadCms();
+        }
       }
+
       configureIdentity();
-      setTimeout(removeLoader, 4000);
-    });
+      window.setTimeout(function () {
+        if (isIdentityAction && window.netlifyIdentity) {
+          removeLoader();
+          window.netlifyIdentity.open();
+        } else {
+          loadCms();
+          removeLoader();
+        }
+      }, 4000);
+    })();
   </script>
 </body>
 </html>
