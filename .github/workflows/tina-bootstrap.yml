@@ -4,12 +4,9 @@ on:
   push:
     branches:
       - feature/tinacms-migration
-  pull_request:
-    branches:
-      - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate-lockfiles:
@@ -18,6 +15,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: feature/tinacms-migration
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -43,12 +42,15 @@ jobs:
       - name: Validate existing website build
         run: npm test
 
-      - name: Upload generated lockfiles
-        uses: actions/upload-artifact@v4
-        with:
-          name: tina-lockfiles
-          path: |
-            package-lock.json
-            tina/tina-lock.json
-          if-no-files-found: error
-          retention-days: 3
+      - name: Commit generated lockfiles
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f package-lock.json tina/tina-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfiles are already current."
+            exit 0
+          fi
+          git commit -m "Add generated TinaCMS lockfiles"
+          git push origin HEAD:feature/tinacms-migration
