@@ -58,4 +58,33 @@ jobs:
             --prod \
             --site="$NETLIFY_SITE_ID" \
             --auth="$TOKEN" \
-            --message="GitHub ${GITHUB_SHA}"
+            --message="GitHub ${GITHUB_SHA}" \
+            --json > /tmp/netlify-production.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const result = JSON.parse(fs.readFileSync('/tmp/netlify-production.json', 'utf8'));
+          const url = String(result.deploy_ssl_url || result.deploy_url || result.site_url || result.url || '')
+            .replace(/^http:/, 'https:')
+            .replace(/\/$/, '');
+          if (!url) throw new Error('Netlify did not return a production URL');
+          fs.appendFileSync(process.env.GITHUB_ENV, `PRODUCTION_URL=${url}\n`);
+          console.log(`Canonical production deploy: ${url}`);
+          NODE
+      - name: Verify canonical production delivery
+        if: steps.auth.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          for path in / /admin/ /admin/help.html /manage.html /admin/config.yml /content/site-data.json; do
+            code="$(curl --retry 10 --retry-delay 2 --retry-all-errors -sS -L -o /tmp/production-body -w '%{http_code}' "$PRODUCTION_URL$path")"
+            echo "$path -> HTTP $code"
+            test "$code" = "200"
+            test -s /tmp/production-body
+          done
+
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PRODUCTION_URL/admin/" | tr -d '\r' > /tmp/admin.headers
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PRODUCTION_URL/" | tr -d '\r' > /tmp/home.headers
+          curl --retry 5 --retry-delay 2 --retry-all-errors -fsSI "$PRODUCTION_URL/admin/config.yml" | tr -d '\r' > /tmp/config.headers
+
+          grep -qi '^x-robots-tag:.*noindex' /tmp/admin.headers
+          grep -qi '^x-content-type-options: *nosniff' /tmp/home.headers
+          grep -Eqi '^cache-control:.*(no-store|no-cache)' /tmp/config.headers
