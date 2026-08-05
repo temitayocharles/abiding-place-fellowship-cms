@@ -28,7 +28,11 @@ jobs:
           test -f public/manage.html
           test ! -f public/admin.html
           test -f public/content/site-data.json
+          test -f public/_headers
+          test -f public/_redirects
           grep -q 'Content Editor · Abiding Place Fellowship' public/admin/index.html
           grep -q 'Website Administration · Abiding Place Fellowship' public/manage.html
           grep -q 'abidingplace.netlify.app' public/admin/config.yml
+          grep -q '^/admin/$$' public/_headers
+          grep -q '^/admin /admin/ 301!$$' public/_redirects
           grep -q 'Current Announcements' public/events.html || true
