@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script defer src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <style>
     :root { --primary:#2563EB; --primary-dark:#1E40AF; --bg:#F8FAFC; --text:#0F172A; --body:'DM Sans',sans-serif; --heading:'Space Grotesk',sans-serif; }
     html,body,#root { min-height:100%; margin:0; font-family:var(--body); background:var(--bg); color:var(--text); }
@@ -31,7 +31,7 @@
   </div>
   <a class="ap-help" href="help.html" target="_blank" rel="noopener">Editor Help</a>
   <script>
-    (function () {
+    window.addEventListener('DOMContentLoaded', function () {
       function removeLoader() {
         var loader = document.getElementById('ap-loading');
         if (loader) loader.remove();
@@ -39,13 +39,17 @@
       var attempts = 0;
       var timer = setInterval(function () {
         attempts += 1;
-        if (document.querySelector('.cms-app-root,.cms-manage-page,.nc-app-root') || attempts > 80) {
+        if (document.querySelector('.cms-app-root,.cms-manage-page,.nc-app-root') || attempts > 120) {
           clearInterval(timer);
           removeLoader();
         }
       }, 100);
 
-      if (window.netlifyIdentity) {
+      function configureIdentity() {
+        if (!window.netlifyIdentity) {
+          setTimeout(configureIdentity, 100);
+          return;
+        }
         window.netlifyIdentity.on('init', function (user) {
           if (!user && /invite_token|confirmation_token|recovery_token/.test(window.location.hash)) {
             window.netlifyIdentity.open();
@@ -56,8 +60,9 @@
           window.location.href = '/admin/';
         });
       }
-      setTimeout(removeLoader, 9000);
-    })();
+      configureIdentity();
+      setTimeout(removeLoader, 15000);
+    });
   </script>
 </body>
 </html>
