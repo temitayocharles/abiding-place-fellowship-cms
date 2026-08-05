@@ -34,6 +34,8 @@ jobs:
           test -f public/admin/index.html
           test -f public/admin/config.yml
           test -f public/admin/help.html
+          test -f public/manage.html
+          test ! -f public/admin.html
           test -f public/content/site-data.json
       - name: Resolve deployment credential
         id: auth
